@@ -10,7 +10,7 @@ library(openxlsx)
 library(dplyr)
 
 # Definir parámetros
-api_key <- "AIzaSyByRMY9SwSejyv-q82bHN0TDoDey4EStqs"  # Reemplaza con tu clave real
+api_key <- ""  # Reemplaza con tu clave real
 video_id <- "NbSTG9dIZFw"
 
 get_all_youtube_comments <- function(video_id, api_key) {
@@ -738,5 +738,6 @@ if (!dir.exists(output_folder)) dir.create(output_folder, recursive = TRUE)
 output_file <- file.path(output_folder, "comentarios_youtube_gelatina10.xlsx")
 write.xlsx(comentarios, output_file)
 message("✅ Archivo Excel generado en: ", output_file)
+
 
 
