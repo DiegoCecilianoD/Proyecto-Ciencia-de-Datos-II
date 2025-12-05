@@ -1,0 +1,3665 @@
+---
+title: "La -Batalla Cultural- en la Argentina"
+author: "Diego Ceciliano Díaz, Segio Guerrero, Santiago Colín, Santiago González, Aldo García"
+date: "2025-11-28"
+output:
+  pdf_document:
+    latex_engine: xelatex
+    keep_tex: true
+fontsize: 12pt
+geometry: margin=2.54cm
+header-includes:
+  - \usepackage{fontspec}
+  - \setmainfont{Times New Roman}
+  - \usepackage{setspace}
+  - \onehalfspacing
+  - \usepackage{caption}
+  - \captionsetup[figure]{font=small,labelfont=bf}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Github
+
+**Link:** [Códigos y bases de datos](https://github.com/DiegoCecilianoD/Proyecto-Ciencia-de-Datos-II)
+
+# Introducción 
+
+En los últimos años, especialmente con la llegada a la Presidencia de Javier Milei, el ecosistema digital argentino ha adquirido un rol central en la producción, circulación y disputa de narrativas políticas. Plataformas como YouTube se han convertido en espacios donde actores políticos, influencers y creadores de contenido construyen discursos, definen agendas y modelan percepciones sociales. En este contexto, los canales asociados al movimiento libertario han ganado especial visibilidad, difundiendo ideas vinculadas al antiestatismo, la libertad de mercado y, en muchos casos, discursos críticos —cuando no abiertamente hostiles— hacia las políticas de género y los derechos de las mujeres. Paralelamente, sectores opositores sostienen marcos discursivos alternativos orientados a los derechos sociales, la igualdad de género y la ampliación de libertades civiles, aunque sin lograr obtener la relevancia mediática que los creadores libertarios.
+
+El presente proyecto surge de la necesidad de comprender cómo se configuran estos discursos en el entorno digital y, especialmente, cómo son apropiados, reproducidos o disputados por la audiencia. Para ello, se recopilaron los subtítulos y comentarios de un corpus compuesto por 60 videos provenientes de seis canales de YouTube —tres libertarios y tres opositores— con el fin de analizar sus principales tópicos discursivos mediante técnicas de modelado de temas (topic modeling).
+
+La motivación principal del análisis radica en evaluar el impacto de estos discursos sobre la agenda político-social en la Argentina, prestando especial atención a la presencia de narrativas machistas, misóginas o anti-derechos, así como a la capacidad de los canales opositores para ofrecer contrapuntos discursivos que disputen o resignifiquen dichos marcos. Analizar los subtítulos como discurso producido y los comentarios como discurso reproducido permite evaluar si la audiencia internaliza marcos machistas o anti-derechos, si los radicaliza o si encuentra en los canales opositores un espacio de contranarración frente a la retórica libertaria hegemónica.
+
+
+# Revisión de literatura
+
+## **Problematización**
+
+La literatura reciente sobre comunicación política digital en Argentina muestra que YouTube se ha convertido en un espacio clave para la producción y circulación de discursos que estructuran la llamada “batalla cultural”. Investigaciones del INADI (2023), UBA (2024) y UNCuyo (2023) coinciden en que la discriminación en el país —racista, xenófoba, clasista y de género— no solo es histórica, sino que hoy adquiere nuevas formas de legitimación en plataformas donde influencers políticos construyen marcos ideológicos de alto impacto.
+En este ecosistema destacan los canales libertarios, donde figuras como El Peluca Milei, Agustín Laje y Emmanuel Danann operan como productores sistemáticos de discursos anti-feministas, negacionistas de la violencia de género y hostiles a instituciones como el INADI o el ex Ministerio de Mujeres. Laje define las políticas de género como “discriminación inversa” o “ideología”, mientras que Danann ha sido judicialmente condenado por discursos transfóbicos. Sus videos combinan retórica emocional, simplificaciones ideológicas y apelaciones identitarias que facilitan su adopción por audiencias jóvenes altamente digitalizadas.
+
+Los comentarios en estos canales, según estudios como Velasco (2022), funcionan como espacios de co-construcción donde los usuarios amplifican o radicalizan narrativas machistas, clasistas y xenófobas. Allí aparecen insultos ideológicos (“zurdo”, “kuka”), racializados (“negro”, “bolita”) y misóginos, lo cual indica que los discursos de los creadores no solo se consumen, sino que se reactivan como marcadores de pertenencia política.
+En contraste, los canales opositores como Futurock FM conformado por creadoras como Julia Mengolini (feminista), Malena Pichot (feminista) y Danila Saiegh (peronista), entre otras y otros. GELATINA conformado por creadores como Pedro Rosemblat (peronista), Marcos Aramburu (activista) y Lia Copello, entre otras y otros. Y Cenital conformado por creadores como Jairo Straccia y Iván Schargrodsky, sostienen marcos pro derechos humanos y de defensa de las políticas de igualdad. Sus videos critican la desfinanciación de las políticas de género, denuncian la violencia simbólica promovida por referentes libertarios y se distancian del negacionismo del gobierno. En los comentarios de estos canales predominan narrativas de resistencia, argumentos contra la misoginia y discusiones sobre el impacto social del ajuste nacional.
+
+La literatura muestra que esta confrontación entre canales no es superficial: YouTube actúa como espacio estructurante del sentido común político, donde los youtubers traducen ideologías a formatos consumibles y las audiencias las validan, disputan o transforman. Este dinamismo convierte a la plataforma en un laboratorio privilegiado para estudiar cómo se producen y circulan discursos de discriminación, igualdad de género y derechos sociales.
+
+
+## **Pregunta de investigación:**
+
+En base a la literatura revisada y al enfoque metodológico adoptado, la pregunta central del proyecto es:
+¿Cómo se articulan los discursos libertarios y opositores en YouTube —tanto en sus videos (subtítulos) como en sus comunidades (comentarios)— y hasta qué punto estos discursos refuerzan, disputan o transforman narrativas de discriminación y, en particular, de género y derechos de las mujeres en Argentina?
+
+
+## **Metodología**
+
+Para analizar estos procesos, el proyecto adopta un abordaje de procesamiento del lenguaje natural (NLP) centrado en la relación entre:
+
+- Discurso producido → los subtítulos completos de los videos.
+- Discurso reproducido → los comentarios de las audiencias.
+
+La distinción se basa en enfoques teóricos de Papacharissi (2015), Munger (2017) y Velasco (2022), que destacan que las plataformas no solo alojan mensajes, sino que instituyen estilos emocionales, identitarios y argumentativos. Así, los subtítulos permiten acceder al marco ideológico deliberado del creador, mientras que los comentarios revelan cómo ese marco es apropiado, radicalizado o disputado por la comunidad.
+
+  - Topic modeling como método central
+  
+  El método principal empleado es el modelado de tópicos (topic modeling), una técnica estadística que identifica        estructuras latentes en grandes conjuntos de texto. Según Blei, Ng y Jordan (2003) y Roberts et al. (2014), los        modelos de tópicos no detectan “temas” en sentido estricto, sino patrones probabilísticos de co-ocurrencia léxica 
+  que pueden interpretarse como campos discursivos o marcos temáticos.
+  
+  La literatura señala que el topic modeling es especialmente adecuado para:
+  
+  - distinguir marcos ideológicos en entornos polarizados;
+  - identificar discursos discriminatorios o anti-derechos incluso cuando no son explícitos;
+  - comparar comunidades políticas (productores vs. audiencia; libertarios vs. opositores);
+  - analizar corpus grandes y heterogéneos como YouTube, donde el lenguaje es informal, fragmentado y altamente emocional.
+  
+  Investigaciones recientes en América Latina (Niño & Sosa, 2023; Barrenechea, 2024) muestran que estas técnicas         permiten mapear la circulación de discursos de extrema derecha y anti-género, revelando patrones que manualmente       serían imposibles de observar.
+
+
+# Descripción de los datos
+
+**¿De dónde provienen los datos?**
+
+Los datos analizados provienen de contenidos públicos de YouTube, seleccionados deliberadamente para comparar la producción discursiva de influenciadores y medios libertarios versus opositores en el contexto de la disputa política y cultural argentina. El corpus total se compone de los comentarios y subtítulos de 60 videos distribuidos en seis canales: tres afiliados al ecosistema libertario (El Peluca Milei, Agustín Laje y Danann) y tres alineados con perspectivas opositoras o progresistas (GELATINA, Futurock FM y Cenital). Para cada creador se juntaron sus 10 videos más relevantes, cuyos subtítulos y comentarios fueron limpiados, estandarizados y finalmente integrados en un archivo maestro en Excel, permitiendo un análisis sistemático del texto y de sus metadatos.
+
+## **1. Selección de videos**:
+  - *Centralidad temática*:  videos donde los creadores abordan feminismo, género, sexualidad, políticas de igualdad, ideología de género, identidad, discursos anti–derechos, violencia simbólica, derechos humanos o análisis político del actual gobierno.
+  - *Relevancia discursiva*: videos que generan conversación pública visible (comentarios, reacciones, polémicas).
+  - *Representatividad del canal*: piezas que reflejan el estilo narrativo y las posiciones ideológicas del creador o medio.
+  - *Diversidad de formatos*: transmisiones en vivo, editoriales, debates, análisis políticos o clips de opinión.
+Esta estrategia generó un corpus equilibrado de discursos producidos y discursos recibidos para ambos polos de la disputa ideológica contemporánea.
+
+## **2. Canales y videos incluidos**
+
+- **2.1. Canales del discurso libertario**
+  - **El Peluca Milei** con 2.02 millones de suscriptores
+  - **Agustín Laje** con 2.61 millones de suscriptores
+  - **Danann** 2.23 con millones de suscriptores
+
+  Los videos seleccionados abordan temáticas como: feminismo, ideología de género, lenguaje inclusivo, identidades LGBT+, debates con feministas, discursos anti–derechos, ataques a referentes políticos como Cristina Fernández de Kirchner o Myriam Bregman.
+
+- **2.2. Canales del discurso opositor**
+  - **GELATINA** con 615 mil suscriptores
+  - **Futurock FM** con 323 mil suscriptores
+  - **Cenital Podcast** con 189 mil suscriptores
+
+  Los videos abordan: políticas públicas de género, violencia simbólica, derechos LGBT+, sexualidad y salud mental, impacto del gobierno de Javier Milei, historia política argentina, expansión de la derecha y desinformación digital.
+
+
+## **3. Extracción de comentarios**
+
+  La obtención de comentarios se realizó mediante la **YouTube Data API v3**, con el siguiente procedimiento:
+
+
+- **Autenticación:** Uso de `yt_oauth()` para establecer conexión con la API.
+
+- **Extracción:**  
+  Consulta a la API mediante las IDs de cada video para obtener: texto del comentario, autor, fecha, número de likes.
+
+- **Almacenamiento:**  
+  Los comentarios se guardaron en archivos **.xlsx** por video y se unieron los datos de los 10 videos de cada creador.
+
+- **Integración final:**  
+  Se consolidaron en dos bases:
+  - comentarios de videos **libertarios (anti–derechos)**,
+  - comentarios de videos **opositores (pro–derechos)**.
+
+
+## **4. Extracción de subtítulos**
+
+  La extracción de subtítulos se realizó **sin utilizar la API**, mediante:
+
+- **Descarga directa:**  
+  Obtención de subtítulos automáticos o manuales en formato **.txt**.
+
+- **Organización:**  
+  Archivos agrupados en carpetas separadas por tipo.
+
+- **Consolidación:**  
+  Una función en R recopiló los 10 archivos `.txt` de cada canal en un único archivo **.xlsx**.
+
+En total obtuvimos cuatro conjuntos textuales principales:
+
+  - **Subtítulos – discurso libertario**
+  - **Subtítulos – discurso opositor**
+  - **Comentarios – discurso libertario**
+  - **Comentarios – discurso opositor**
+
+
+## **5. Variables empleadas**
+
+- **5.1. Variables de comentarios (API)**
+    
+  - `authorDisplayName`
+  - `publishedAt`
+  - `textDisplay` / `textOriginal`
+  - `likeCount`
+  - `video_id`
+
+  Variables creadas: `canal`, `creador`, `texto_limpio`. 
+
+- **5.2. Variables de subtítulos**: `line` / `texto`, `video`, `canal`, `creador`, `texto_limpio`.
+
+- **5.3. Variables creadas durante tokenización y análisis**: `token`, `bigram`, `n`, `tf_idf`, `gamma`, `beta`.
+
+
+## **6. Proceso de limpieza y transformación**
+
+- **6.1. Normalización inicial**: Minúsculas y eliminación de: URLs, emojis, puntuación, números, tildes, HTML.
+
+- **6.2. Tokenización**
+  - `unnest_tokens()`
+  - Creación de objeto tokenizado con: `token`, `video`, `canal`, `creador`.
+
+- **6.3. Eliminación de ruido**: Stopwords en español, stopwords personalizadas (“jaja”, “ponele”, etc.), tokens \< 3 caracteres, limpieza de duplicados.
+
+- **6.4. Matrices de término–documento**: Se generaron dos matrices: subtítulos y comentarios.
+
+- **6.5. Consolidación del corpus**
+
+  Se obtuvieron cuatro conjuntos finales:
+
+  1. Tokens subtítulos – libertarios  
+  2. Tokens subtítulos – opositores  
+  3. Tokens comentarios – libertarios  
+  4. Tokens comentarios – opositores  
+
+
+## **7. Cobertura temporal y geográfica**
+
+- **7.1. Temporal**
+  
+  Los videos abarcan **2022–2024**, coincidiendo con: campaña presidencial de Milei, elecciones 2023, primeros meses de gobierno.
+
+-  **7.2. Geográfica**
+
+    Aunque YouTube no provee georreferenciación individual, los canales: producen desde Argentina, discuten política nacional, poseen audiencia mayoritariamente argentina.
+
+## **8. Sesgos, limitaciones y supuestos**
+
+-  **8.1. Sesgos del corpus**
+    1. Sesgo algorítmico (videos más recomendados dominan).  
+    2. Sesgo de participación (minoría hiperactiva).  
+    3. Sesgo temático.
+
+- **8.2. Limitaciones metodológicas**
+
+  1. Subtítulos automáticos → errores.  
+  2. LDA: no capta sarcasmo, asume independencia condicional, requiere número fijo de tópicos.
+  3. Ambigüedad semántica en términos clave.
+
+- **8.3. Supuestos adoptados**
+  1. Subtítulos = discurso producido.  
+  2. Comentarios = discurso reproducido.  
+  3. Libertario vs. opositor = clasificación analítica válida.  
+  4. Corpus suficiente para topic modeling comparativo.
+
+
+# Model Canvas
+
+| Sección | Descripción |
+|--------|-------------|
+| **1. Problema** | Comprender cómo se articulan los discursos **libertarios** y **opositores** en YouTube —en subtítulos (discurso producido) y comentarios (discurso reproducido)— e identificar la presencia de narrativas de género, feminismo y discursos anti–derechos. |
+| **2. Objetivo del modelo** | Utilizar modelado de tópicos (**LDA**) para identificar patrones discursivos, compararlos entre grupos ideológicos y evaluar si la audiencia reproduce, radicaliza o disputa los marcos presentes en los videos. |
+| **3. Datos disponibles** | 60 videos de 6 canales (3 libertarios, 3 opositores). Subtítulos descargados + comentarios extraídos vía YouTube API. Cuatro corpus finales: subtítulos libertarios/opositores y comentarios libertarios/opositores. |
+| **4. Variables relevantes** | Texto crudo; texto limpio; tokens; bigramas; tf–idf; fechas; likes; autor; canal; matrices document-term; parámetros LDA: **beta**, **gamma**, coherencia. |
+| **5. Enfoque y técnicas** | Limpieza y normalización textual; tokenización; eliminación de stopwords; DTM; LDA por corpus; comparación estructural entre discursos; análisis de tópicos dominantes; visualización de palabras clave. |
+| **6. Métricas de evaluación** | Coherencia de tópicos; interpretabilidad humana; estabilidad del modelo; diferenciación entre marcos discursivos; consistencia entre subtítulos y comentarios. |
+| **7. Riesgos y limitaciones** | Sesgo de la plataforma YouTube; volumen desigual de comentarios; calidad variable de subtítulos automáticos; límites del LDA para captar ironía/emoción; polisemia de términos políticos; sobre-representación o sub-representación de grupos discursivos. |
+| **8. Resultados esperados** | Identificar tópicos clave por grupo ideológico; evaluar marcos machistas/anti–derechos; medir alineación entre creadores y audiencia; mapear espacios de contranarración; aportar evidencia empírica sobre la “batalla cultural” digital. |
+| **9. Impacto esperado** | Contribuir a la comprensión del ecosistema discursivo argentino; visibilizar cómo se producen y circulan narrativas de género; aportar insumos para investigaciones sobre radicalización digital y comunicación política. |
+
+
+# Diccionario 
+
+
+| Término / Sección | Descripción |
+|-------------------|-------------|
+| **Zurdo / Zurda / Zurdos** | Insulto ideológico desde el campo libertario para etiquetar a personas de izquierda, progresistas o feministas. Funciona como marcador de inferioridad moral o irracionalidad. |
+| **Kuka / K / Kakarada** | Término despectivo contra simpatizantes kirchneristas. Caricaturiza al kirchnerismo y facilita su demonización política. |
+| **Progre / Progres** | Utilizado en sentido peyorativo para ridiculizar agendas de derechos, diversidad o igualdad. Marca ingenuidad o desconexión con la “realidad”. |
+| **Feminazi** | Fusión de “feminista” + “nazi”. Deslegitima al feminismo asociándolo al autoritarismo o al extremismo. |
+| **Ideología de género** | Marco conceptual de la ultraderecha que presenta el feminismo, la ESI y los derechos LGBT+ como amenazas a la familia o a la nación. Muy presente en discursos libertarios. |
+| **Woke** | Término importado usado para burlarse de agendas progresistas o de derechos. Suele connotar exageración emocional o corrección política. |
+| **Agenda 2030** | Referencia conspirativa usada para vincular políticas de género y derechos con supuestos planes globalistas. Recurso para rechazo ideológico amplio. |
+| **Casta** | Significante central del mileísmo. Agrupa a políticos, sindicatos, periodistas y al Estado como enemigos del “pueblo”. |
+| **Gorila / Gorilada** | Insulto histórico del peronismo hacia sectores antiperonistas o elitistas. Marca desprecio hacia lo popular. |
+| **Facho / Fascista / Fachito** | Término usado desde la oposición y sectores progresistas para denunciar discursos autoritarios, misóginos o de ultraderecha. |
+| **Patria** | Significante emocional del campo nacional–popular. Apela a soberanía, identidad colectiva y defensa del proyecto nacional. |
+| **Pueblo** | Categoría identitaria clave del peronismo y progresismo. Se usa en contraste a “élite”, “casta” o “mercado”. |
+| **Militancia / Compañeres** | Léxico identitario progresista. Marca pertenencia, organización colectiva y compromiso político. |
+| **Libertad** | Significante vacío pero central en el discurso libertario. Reúne sentidos de libre mercado, antiestatismo y autonomía individual. |
+| **Realidad / Sentido común** | Estrategias de legitimación libertarias; se presentan como quienes “dicen la verdad” frente a supuestos relatos progresistas. |
+| **Batalla cultural** | Concepto usado por ambos campos: para libertarios, defensa de valores tradicionales; para opositores, resistencia ante retrocesos en derechos. |
+| **Relato** | En el discurso libertario, se usa para deslegitimar marcos kirchneristas o progresistas, insinuando manipulación o ficción. |
+| **Agenda / Narrativa** | Términos metadiscursivos que indican disputa por sentidos, marcos e interpretaciones de la realidad. |
+| **Patriarcado** | Significante central del feminismo. A menudo negado o ridiculizado por discursos anti–derechos. |
+| **Loca** | Insulto machista común en comentarios libertarios. Se usa para descalificar a mujeres y diversidades. |
+| **Feminista / Feministas** | En libertarios es usado como insulto; en la oposición, como identidad positiva ligada a derechos e igualdad. |
+| **Derecha / Ultraderecha** | En el campo opositor se usa para denunciar retrocesos democráticos o agendas anti–derechos. |
+| **Libertarios** | Autodescripción del espacio mileísta. Desde la oposición, a veces aparece como rótulo asociado a extremismo o insensibilidad social. |
+| **Peronismo / Peronista** | Identidad política central en la oposición. En discursos libertarios se usa como sinónimo de corrupción o estatismo rígido. |
+| **Izquierda** | Término utilizado por libertarios para aglutinar a progresistas, kirchneristas, feministas y movimientos sociales bajo un mismo enemigo. |
+
+
+# Resultados del modelo
+
+Para el modelado temático, se construyó una matriz documento–término con cast_dtm() y se eliminaron términos y documentos vacíos mediante col_sums() y row_sums(). Luego se entrenó un modelo LDA con LDA() utilizando el método Gibbs, especificando 5 tópicos. Los términos representativos de cada tópico se extrajeron con tidy(), lo que facilitó la identificación de patrones semánticos dentro del corpus. Esta información se visualizó mediante ggplot(), empleando facet_wrap() para comparar los distintos tópicos. Finalmente, se seleccionaron manualmente 5 tópicos relevantes y se les asignaron etiquetas interpretativas acordes con su contenido.
+
+Se realizaron diversas pruebas con "k = 7, 10, 14, 20", sin embargo el k seleccionado fue k = 5 mediante un análisis de perplejidad y porque fue el que se ajustó mejor a los datos. El k = 5 se ajustó mejor a los datos porque los tópicos se vuelven más específicos, con un k más alto hay tópicos con términos demasiado similiares que realmente podrían conformar un solo tópico para eficientar el análisis y la exactitud. 
+
+El análisis mediante Modelado de Tópicos (LDA) sobre los cuatro corpus textuales (Subtítulos y Comentarios de Libertarios y Opositores) revela estructuras discursivas claramente polarizadas en YouTube, centradas en la economía, el rol del Estado, la historia política argentina y, de manera crucial, la "batalla cultural" en torno al género y los derechos.
+
+Los datos analizados corresponden a los subtítulos de 60 videos de Youtube y más de 2 días de contenido. Mientras que el análisis de los comentarios modela más de 75 mil observaciones. 
+
+
+# **Modelado de tópicos subtítulos creadores libertarios (Discurso Producido)**
+
+
+## **Palabras y bigramas más frecuentes subtítulos creadores libertarios**
+
+
+```{r, warning=FALSE, message=FALSE, include=FALSE}
+
+# ---------------- Cargar librerías ----------------
+
+library(tidyverse)     # Limpieza y manipulación
+library(openxlsx)      # Exportar Excel
+library(tidytext)      # Tokenizar texto
+library(readxl)        # Leer Excel
+library(topicmodels)   # Modelos LDA
+library(tm)            # Stopwords español
+library(ggplot2)       # Gráficos estadísticos
+library(wordcloud)     # Nube de palabras
+library(RColorBrewer)  # Paletas de color
+library(igraph)        # Redes de texto
+library(ggraph)        # Graficar grafos
+library(tidyr)         
+library(slam)          
+
+
+# ---------------- Comienza el procesamiento del Excel ----------------
+
+# Cargar los comentarios de los videos de tres creadores
+df_laje_subs   <- read_excel("Datos/Subtitulos/subtitulos_danan.xlsx")
+df_danann_subs <- read_excel("Datos/Subtitulos/subtitulos_laje.xlsx")
+df_peluca_subs <- read_excel("Datos/Subtitulos/subtitulos_peluca.xlsx")
+
+#Combinar en un solo data_frame
+subs_todos <- bind_rows(
+  df_laje_subs,
+  df_danann_subs,
+  df_peluca_subs
+)
+
+# Verificar nombres de columnas
+names(subs_todos)
+
+# Usar la columna textOriginal
+echterText <- subs_todos %>%
+  mutate(texto = as.character(texto))
+
+# Limpieza: acentos, minúsculas, puntuación y emojis
+echterText <- echterText %>%
+  mutate(
+    texto = str_replace_all(
+      texto, c( 
+        "á" = "a",
+        "é" = "e",
+        "í" = "i",
+        "ó" = "o",
+        "ú" = "u",
+        "Á" = "A",
+        "É" = "E",
+        "Í" = "I",
+        "Ó" = "O",
+        "Ú" = "U",
+        "ü" = "u",
+        "Ü" = "U",
+        "ñ" = "n",
+        "Ñ" = "N"
+      ))) 
+
+# Ahora eliminamos los signos de puntuación 
+echterText <- echterText %>%  
+  mutate(
+    texto = str_to_lower(texto), 
+    texto = str_replace_all(texto, "[[:punct:]]", " "), 
+    texto = str_squish(texto)
+  )
+
+# Eliminamos números que puedan generar ruido en nuestro análisis
+echterText <- echterText %>%
+  mutate(
+    texto = str_replace_all(texto, "[0-9]+", " "),
+    texto = str_squish(texto)
+  )
+
+# Eliminamos urls que sean molestas para el análisis
+echterText <- echterText %>%
+  mutate(
+    texto = str_replace_all(texto, "https?://\\S+|www\\.\\S+", " "),
+    texto = str_squish(texto)
+  )
+
+# Eliminamos terminología ligada a sitios web o enlaces de internet
+echterText <- echterText %>%
+  mutate(
+    texto = str_remove_all(texto, "\\b(www|http|https|watch|youtube|xqedg|quot|href|com|amp|t|br|nrqw)\\b"),
+    texto = str_squish(texto)
+  )
+
+# Eliminamos emojis
+echterText <- echterText %>%
+  mutate(
+    texto = str_replace_all(texto, "[\\p{So}\\p{Cn}]", " "),
+    texto = str_squish(texto)
+  )
+
+echterText <- echterText %>%
+  mutate(doc_id = row_number())
+
+
+# Verificar poniendo los top 10 
+head(echterText$texto, 10)
+
+# Stopwords en español
+stopwords_es <- stopwords("spanish")
+
+# Lista palabras de ruido
+ruidos <- c(
+  # Nombres propios comunes en los comentarios
+  "jaja", "xd", "like", "video", "canal", "suscribete",
+  "laje", "agustin", "adela", "micha", "milei", "javier",
+  
+  # Palabras comunes sin contenido relevante
+  "hace", "cada", "yo", "los", "sin", "q", "era", "todos", "algo",
+  "esta", "esa", "todo", "porque", "tu", "ese", "tiene", "son", "las",
+  "o", "si", "mas", "solo", "v", "b", "asi", "tan", "siento", "como",
+  "del", "mi", "su", "sus", "una", "para", "pero", "es", "ser", "ver", "que",
+  "de", "a", "el", "la", "y", "en", "no", "me", "lo", "un", "se",
+  "por", "con", "le", "al", "cuando", "te", "eso", "este", "ya",
+  "donde", "cual", "quien", "fue", "sido", "estoy", "estas",
+  "hay", "aca", "alla", "ahi", "entonces", "pues", "ahora", "despues",
+  "antes", "luego", "siempre", "nunca", "tambien", "ni", "tus", "nuestro",
+  "nuestros", "nuestra", "nuestras", "vos", "usted", "ustedes", "ellos", "ellas",
+  "otro", "otros", "otra", "otras", "mismo", "misma", "mismos", "mismas",
+  "tal", "tales", "tanto", "tanta", "tantos", "tantas", "mucho", "mucha",
+  "muchos", "muchas", "poco", "poca", "pocos", "pocas", "muy", "menos",
+  "mejor", "peor", "mayor", "menor", "gran", "grande", "pequeno",
+  "bien", "mal", "aqui",
+  
+  # Verbos auxiliares
+  "va", "voy", "vas", "van", "ir", "ido", "iba", "iban",
+  "he", "has", "ha", "hemos", "han", "haber", "habido",
+  "soy", "eres", "somos", "estar", "estado",
+  "tengo", "tienes", "tenemos", "tienen", "tener", "tenido",
+  "hago", "haces", "hacemos", "hacen", "hacer", "hecho",
+  "digo", "dices", "dice", "decimos", "dicen", "decir", "dicho",
+  "puedo", "puedes", "puede", "podemos", "pueden", "poder", "podido",
+  "quiero", "quieres", "quiere", "queremos", "quieren", "querer", "querido",
+  "doy", "das", "da", "damos", "dan", "dar", "dado",
+  "veo", "ves", "vemos", "ven", "visto",
+  
+  # Pronombres y artículos extra
+  "esto", "esos", "esas", "aquel", "aquella", "aquellos", "aquellas",
+  "mio", "mia", "mios", "mias", "tuyo", "tuya", "tuyos", "tuyas",
+  "suyo", "suya", "suyos", "suyas",
+  
+  # Conectores / preposiciones
+  "sobre", "bajo", "entre", "desde", "hasta", "hacia", "mediante",
+  "durante", "contra", "segun", "tras", "excepto", "salvo",
+  
+  # Saludos / ruido emocional
+  "gracias", "excelente", "buena", "bueno", "saludos", "hola", "jajaja",
+  "ojala", "porfa", "porfavor", "favor", "saludo", "abrazo", "adelante", "siga",
+  "dije", "digan",
+  
+  # Ruido general español
+  "estan", "están", "aun", "aún", "ademas", "además",
+  "toda", "etc", "vez", "veces", "año", "años", "ano", "anos",
+  "creo", "parece", "alguien", "deja", "encanta", "puede", "sabe",
+  "parte", "tema", "temas", "hoy", "dia", "día", "tiempo", "momento",
+  "cosa", "cosas", "igual", "forma", "unica", "única", "cualquier",
+  "primer", "primera", "segundo", "tercero",
+  
+  # Noise / typos
+  "fnxlzcu", "hww", "ooooila",
+  
+  # Proper nouns irrelevantes
+  "abigail", "agus", "sra", "señora", "senora", "lucas", "lima",
+  "peru", "dea", "proape",
+  
+  # Ruido en inglés / alemán
+  "weiter", "einem", "mann",
+  
+  # Expresiones multi-palabra (las filtrarás en bigrams)
+  "anos atrás", "abigail gracias", "abigail dios", "gracias abigail",
+  "estan haciendo", "encanta escuchar", "sra abigail", "tres semanas",
+  "temas abordas", "mpios lucas", "dos veces", "excelente analisis",
+  "seria interesante", "buen programa", "siga adelante",
+  "senora gracias", "excelente presentación", "excelente entrevista",
+  "algun dia", "algun momento", "cualquier cosa",
+  "hoy dia", "dio cuenta", "excelente analisis", "sigue adelante",
+  "fuerte abrazo", "abrir flor", "doiorg", "doi org",
+  "excelente exposición", "ningun momento", "tiempo igual",
+  "dios hara", "dios hará", "unica forma", "estan quitando",
+  "llevan anos", "dedo patética", "dolor oseo", "bache intente",
+  "demos lugar",
+  
+  "hizo", "hace", "pasa", "paso", "ser", "seria", "todo", "todas",
+  "claro", "debe", "deberia", "hablar", "hablo", "habla", "dije", "digo",
+  "pregunta", "razon",
+  
+  
+  
+  "falta", "falta de", "pena", "vergüenza",
+  "tema", "temas", 
+  "totalmente", "claro", "pasa", "haciendolo", "haciendo",
+  "ejemplo",
+  "apoyo", "debe", "debería", "deberia",
+  "sos", "sos un", "sos una",
+  "quedo", "hizo", "trabajo",
+  "plena", "parte", 
+  "hizo", "habla", "hablar", "dijo", "dice", "digamos", "habia","tipo", "manera", "tenes", "mira",
+  "dos", "recien","lado", "fijate", "tenia","llama", "nueva", "dos", "incluso", "traves", 
+  "sino", "nacio", "partir", "ningun", "dentro", "lugar", "dio", "miren", "decia", "algun", "viene",
+  "alguna", "nadie", "medio", "casa", "respecto", "importante", 
+  "quisieras_colaborar", "maria_julia", "efectivamente", "supuesto", "ayer",
+  "hacerlo_uniendote", "importantes_librerias", "pudieras_colaborar", "campanita_musica",
+  "patreon_siguiendo", "hijos", "sabes", "cuenta", 
+  "patreon_siguiendo", "hacerlo_uniendote", "comentario_suscribiendote", "sabes", "buenos_dias",
+  "juan_pablo", "habian_encontrado", "titulado_generacion", "boton_unirse", "importantes_librerias", 
+  "musica_bienvenidos", "maria_julia", "maria", "julia", "patreon", "siguiendo", "hacerlo", "uniendote",
+  "suscribiendote", "punto", "buenos_dias", "buenos", "dias", "podes_encontrarlo", 
+  "podes", "encontrarlo", "etcetera_etcetera", "etcetera", "reciente_libro", "reciente", "libro",
+  "importantes", "librerias", "libreria", "donaciones_libres", "donaciones", "libres", "encuentra", "disponible",
+  "encuentra_disponible", "quisieras", "marcela", "pagano", "pablo", "anduesa", "barbara", "dirroco", "poner",
+  "demas", "monton", "pudieras", "habian", "boton", "unirse", "musica", "campanita"
+)
+
+# Tokenizar
+tokens <- echterText %>%
+  unnest_tokens(word, texto) %>%
+  filter(!word %in% stopwords_es) %>%
+  filter(!word %in% ruidos) %>%
+  filter(!grepl("isimo$|isima$|isimos$|isimas$", word)) %>%
+  filter(nchar(word) >= 3) %>%
+  select(doc_id, word)
+
+# Contar frecuencias
+frecuencias <- tokens %>%
+  count(word, sort = TRUE)
+
+# Seleccionar top 20
+top20 <- head(frecuencias, 20)
+print(top20)
+
+# Gráfico de barras
+sub_lib_bar <- ggplot(top20, aes(x = reorder(word, n), y = n)) +
+  geom_col(fill = "yellow", width = 0.7) +
+  coord_flip() +
+  labs(
+    title = "Top 20 términos más frecuentes\nSubtítulos de videos libertarios",
+    x = "Término",
+    y = "Frecuencia",
+    caption = "Elaboración propia (Tupamaros) con datos de YouTube"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold", size = 16, hjust = .5),
+    axis.title.y = element_text(margin = margin(r = 10)),
+    axis.title.x = element_text(margin = margin(t = 10)),
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor = element_blank(),
+    plot.caption = element_text(size = 10, hjust = 1, color = "gray40"),
+    axis.text = element_text(color = "gray20")
+  )
+
+# Nube de palabras
+wordcloud(
+  words = frecuencias$word,
+  freq = frecuencias$n,
+  min.freq = 5,  # Aumenté el mínimo para reducir ruido
+  max.words = 100,
+  colors = brewer.pal(8, "Dark2"),
+  random.order = FALSE
+)
+
+# BIGRAMAS MEJORADOS
+# Crear bigramas
+bigrams <- echterText %>%
+  unnest_tokens(bigram, texto, token = "ngrams", n = 2)
+
+# Separar en dos columnas
+bigrams_sep <- bigrams %>%
+  separate(bigram, c("word1", "word2"), sep = " ")
+
+# Filtrar con criterios más estrictos
+bigrams_filt <- bigrams_sep %>%
+  filter(!word1 %in% stopwords_es,
+         !word2 %in% stopwords_es,
+         !word1 %in% ruidos,
+         !word2 %in% ruidos,
+         nchar(word1) >= 3,  # Palabras de al menos 3 caracteres
+         nchar(word2) >= 3,
+         !is.na(word1), 
+         !is.na(word2))
+
+bigram_counts <- bigrams_filt %>%
+  count(word1, word2, sort = TRUE) %>%
+  filter(n >= 3)  # Solo bigramas que aparezcan al menos 3 veces
+
+# Ver los top bigramas
+print(head(bigram_counts, 30))
+
+# Obtener términos del top 20 para el grafo
+top20_terms <- tokens %>%
+  count(word, sort = TRUE) %>%
+  slice_head(n = 20) %>%
+  pull(word)
+
+# Filtrar bigramas donde al menos una palabra esté en el top 20
+bigram_top20 <- bigram_counts %>%
+  filter(word1 %in% top20_terms | word2 %in% top20_terms) %>%
+  filter(n >= 3)  # Mínimo 3 apariciones
+
+# Visualización de red de bigramas mejorada
+graph <- graph_from_data_frame(bigram_top20)
+
+# Graficar con ggraph 
+set.seed(123)
+
+sub_lib_gr <- ggraph(graph, layout = "fr") +
+  # Edges
+  geom_edge_link(
+    aes(edge_alpha = n, edge_width = n),
+    edge_colour = "gray80",
+    show.legend = FALSE
+  ) +
+  
+  # Nodes
+  geom_node_point(
+    color = "yellow",
+    size = 6,
+    alpha = 0.9
+  ) +
+  
+  # Labels
+  geom_node_text(
+    aes(label = name),
+    repel = TRUE,                    
+    size = 3.6,
+    color = "gray10",
+    fontface = "bold"
+  ) +
+  
+  # Fondo y tema
+  theme_void() +
+  
+  labs(
+    title = "Red de bigramas\nTérminos más frecuentes - Subtítulos Libertarios",
+    caption = "Elaboración propia (Tupamaros) con datos de YouTube"
+  ) +
+  
+  theme(
+    plot.title = element_text(
+      face = "bold",
+      size = 16,
+      hjust = 0.5,
+      margin = margin(t = 10, b = 10)
+    ),
+    plot.caption = element_text(
+      size = 10,
+      hjust = 1,
+      color = "gray40",
+      margin = margin(t = 10)
+    )
+  )
+
+# Convert bigrams into single-token strings with "_"
+bigrams_unidos <- bigrams_filt %>%
+  mutate(bigram_token = paste(word1, word2, sep = "_")) %>%
+  count(bigram_token, sort = TRUE)
+
+# View top bigram tokens
+head(bigrams_unidos, 30)
+
+
+# Add bigrams as "_"-joined tokens to the existing tokens object
+tokens <- tokens %>%
+  bind_rows(
+    bigrams_filt %>% 
+      transmute(word = paste(word1, word2, sep = "_"))
+  )
+
+
+# Contar frecuencias nuevamente
+frecuencias <- tokens %>%
+  count(word, sort = TRUE)
+
+# Seleccionar top 20 nuevamente
+top20 <- head(frecuencias, 20)
+print(top20)
+
+
+# Nube de palabras con bigramas como tokens
+wordcloud(
+  words = frecuencias$word,
+  freq = frecuencias$n,
+  min.freq = 5,  # Aumenté el mínimo para reducir ruido
+  max.words = 100,
+  colors = brewer.pal(8, "Dark2"),
+  random.order = FALSE
+)
+
+# ---------------- Topic models ----------------
+
+# Crear documento-término matriz (DTM) desde los tokens limpios
+dtm_data <- tokens %>%
+  count(doc_id, word) %>%
+  cast_dtm(doc_id, word, n)
+
+# Eliminar documentos vacíos
+row_sums <- slam::row_sums(dtm_data)
+cat("Documentos vacíos iniciales:", sum(row_sums == 0), "\n")
+dtm_data <- dtm_data[row_sums > 0, ]
+
+dtm_filtered <- removeSparseTerms(dtm_data, 0.999)  
+cat("Dimensiones después de filtrar:", dim(dtm_filtered), "\n")
+
+# Eliminar documentos vacíos después del filtrado
+row_sums_after <- slam::row_sums(dtm_filtered)
+cat("Documentos vacíos después:", sum(row_sums_after == 0), "\n")
+dtm_filtered <- dtm_filtered[row_sums_after > 0, ]
+
+# Verificar que tenemos suficientes datos
+if(nrow(dtm_filtered) < 10) {
+  stop("Muy pocos documentos. Necesitas al menos 10 con contenido válido.")
+}
+
+if(ncol(dtm_filtered) < 10) {
+  stop("Muy pocos términos únicos. Revisa tu lista de palabras de ruido.")
+}
+
+# Probar distintos valores de k
+k_values <- 2:5
+perplejidades <- c()
+
+for (k in k_values) {
+  set.seed(1234)
+  modelo_temp <- LDA(
+    dtm_filtered,
+    k = k,
+    method = "Gibbs",
+    control = list(
+      seed = 1234,
+      burnin = 300,
+      iter = 700,
+      thin = 50
+    )
+  )
+  
+  loglik <- logLik(modelo_temp)
+  perplejidad <- exp(-loglik / sum(dtm_filtered))
+  perplejidades <- c(perplejidades, perplejidad)
+}
+
+df_perp <- data.frame(k = k_values, perplejidad = perplejidades)
+
+# Seleccionar k mínimo
+k_optimo <- df_perp$k[which.min(df_perp$perplejidad)]
+cat("\n>>> K ÓPTIMO POR PERPLEJIDAD:", k_optimo, "\n")
+
+# Reemplazar el valor final de k por el óptimo
+k_topics <- k_optimo 
+
+cat("\nUsando k =", k_topics, "tópicos\n")
+
+# Fijar semilla global
+set.seed(1234)
+
+# Configuración del modelo
+lda_model <- LDA(
+  dtm_filtered,
+  k = k_topics,
+  method = "Gibbs",
+  control = list(
+    seed = 1234,
+    burnin = 500,      
+    iter = 1000,       
+    thin = 50,         
+    best = TRUE,       
+    verbose = 50       
+  )
+)
+
+
+# ---------------- Extraer y analizar tópicos ----------------
+
+# Extraer términos por tópico (beta)
+terms_per_topic <- terms(lda_model, 10)  #top 10 por tópico
+
+# Mostrar términos por tópico
+for(i in 1:k_topics) {
+  cat("\nTÓPICO", i, ":\n")
+  cat(paste(terms_per_topic[, i], collapse = ", "), "\n")
+}
+
+# Crear vector vacío
+topic_labels <- rep(NA, k_topics)
+
+# Nombres de los tópicos
+topic_labels[1] <- "Discurso libertario"
+topic_labels[3] <- "Batalla cultural"
+topic_labels[2] <- "Presidente Milei"
+topic_labels[4] <- "Ideología woke"
+topic_labels[5] <- "Crítica feminismo"
+
+topic_names <- data.frame(
+  topic = 1:k_topics,
+  nombre_topico = topic_labels
+)
+
+# Extraer matriz beta (probabilidades término-tópico)
+beta_matrix <- posterior(lda_model)$terms
+
+# Convertir a formato tidy manualmente
+topics_beta <- data.frame()
+for(i in 1:k_topics) {
+  topic_data <- data.frame(
+    topic = i,
+    term = colnames(beta_matrix),
+    beta = beta_matrix[i, ]
+  )
+  topics_beta <- rbind(topics_beta, topic_data)
+}
+
+# Agregar nombre del tópico
+topics_beta <- topics_beta %>%
+  left_join(topic_names, by = "topic") %>%
+  arrange(topic, desc(beta))
+
+# Top 10 términos por tópico
+top_terms <- topics_beta %>%
+  group_by(topic, nombre_topico) %>%
+  slice_max(beta, n = 10) %>%
+  ungroup() %>%
+  arrange(topic, desc(beta))
+
+# Mostrar resultados detallados
+for(i in 1:k_topics) {
+  cat("\n=== Tópico:", topic_labels[i], "(con probabilidades) ===\n")
+  topic_terms <- top_terms %>%
+    filter(topic == i) %>%
+    select(term, beta)
+  print(topic_terms, n = 10)
+}
+
+# Paleta de colores personalizada por tópico
+colores_topicos <- c(
+  "Discurso libertario" = "#F1C40F",      
+  "Batalla cultural" = "#3498DB", 
+  "Presidente Milei" = "#9B59B6",
+  "Ideología woke" = "pink",       
+  "Crítica feminismo"= "#C0392B"   
+)
+
+# Gráfico top términos por tópico 
+sub_lib_tp <- top_terms %>%
+  mutate(term = reorder_within(term, beta, nombre_topico)) %>%
+  ggplot(aes(beta, term, fill = nombre_topico)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ nombre_topico, scales = "free") +
+  scale_y_reordered() +
+  scale_fill_manual(values = colores_topicos) +
+  labs(
+    title = paste("Top 10 términos por tópico (k =", k_topics,")"),
+    x = "Beta (probabilidad del término en el tópico)",
+    y = NULL,
+    caption = "Elaboración propia (Tupamaros) con datos de YouTube"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold", size = 16, hjust = 0.5),
+    axis.text = element_text(size = 5, color = "gray20"),
+    plot.caption = element_text(size = 10, hjust = 1, color = "gray40")
+  )
+```
+
+```{r, echo=FALSE, fig.width=7, fig.height=5, out.width="90%"}
+print(sub_lib_bar)
+```
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.width=7, fig.height=5, out.width="90%"}
+print(sub_lib_gr)
+```
+
+
+## 1. Selección de k óptimo
+
+- Construcción de la DTM y filtrado de documentos vacíos.
+- Evaluación de perplejidad para k = 2 a 5.
+- k óptimo seleccionado: `r k_optimo`.
+
+
+## 2. Análisis por tópico 
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.width=7, fig.height=5, out.width="90%"}
+print(sub_lib_tp)
+```
+
+
+## 3. Tópicos
+
+En base a los términos más presentativos se les asignó manualmente un nombre a cada tópico: 
+
+- Discurso libertario: palabras asociadas a libertad económica, política y crítica al estado.
+- Batalla cultural: términos relacionados con debates ideológicos, educación y cultura popular.
+- Presidente Milei: menciones directas al presidente y su estilo comunicativo.
+- Ideología woke: críticas y debates sobre políticas de género.
+- Crítica feminismo: opiniones críticas hacia movimientos feministas y de igualdad de género.
+
+
+## 4. Interpretación 
+
+```{r, echo=FALSE, out.width="80%"}
+knitr::include_graphics("uno.png")
+```
+
+## 5. Hallazgos clave
+
+  1. Dominio Ideológico Estructurado: El discurso producido por los creadores libertarios está altamente estructurado en torno a dos ejes principales: la economía/antiestatismo y la crítica cultural/anti-género.
+  
+  2. Uso de Marcadores Simplificados: Los términos más frecuentes como "ideologia", "libertad", "realidad" y "problema" sugieren un marco que simplifica complejas disputas políticas a dicotomías ideológicas, lo cual facilita la adopción por audiencias jóvenes.
+  
+  3. Temas Centrales Anti-Derechos: La inclusión explícita de tópicos como "Ideología woke" y "Crítica feminismo" confirma que estos canales operan como productores sistemáticos de discursos anti-feministas y negacionistas de la violencia de género, tal como sugiere la literatura
+
+
+# **Modelado de tópicos comentarios creadores libertarios (Discurso Reproducido)**
+
+
+## **Palabras y bigramas más frecuentes comentarios creadores libertarios**
+
+
+```{r, warning=FALSE, message=FALSE, include=FALSE}
+# ---------------- Cargar librerías ----------------
+
+library(tidyverse)     # Limpieza y manipulación
+library(openxlsx)      # Exportar Excel
+library(tidytext)      # Tokenizar texto
+library(readxl)        # Leer Excel
+library(topicmodels)   # Modelos LDA
+library(tm)            # Stopwords español
+library(ggplot2)       # Gráficos estadísticos
+library(wordcloud)     # Nube de palabras
+library(RColorBrewer)  # Paletas de color
+library(igraph)        # Redes de texto
+library(ggraph)        # Graficar grafos
+library(tidyr)         
+library(slam)          
+
+# ---------------- Comienza el procesamiento del Excel ----------------
+
+# Cargar los comentarios de los videos de tres creadores
+df_laje   <- read_excel("Datos/Comentarios/comentarios_videos_laje_decena.xlsx")
+df_danann <- read_excel("Datos/Comentarios/comentarios_videos_danann_decena.xlsx")
+df_peluca <- read_excel("Datos/Comentarios/comentarios_videos_peluca_decena.xlsx")
+
+#Combinar en un solo data_frame
+comentarios_todos <- bind_rows(
+  df_laje,
+  df_danann,
+  df_peluca
+)
+
+# Verificar nombres de columnas
+names(comentarios_todos)
+
+# Usar la columna textOriginal
+echterText <- comentarios_todos %>%
+  mutate(texto = as.character(textOriginal))
+
+# Limpieza: acentos, minúsculas, puntuación y emojis
+echterText <- echterText %>%
+  mutate(
+    texto = str_replace_all(
+      texto, c( 
+        "á" = "a",
+        "é" = "e",
+        "í" = "i",
+        "ó" = "o",
+        "ú" = "u",
+        "Á" = "A",
+        "É" = "E",
+        "Í" = "I",
+        "Ó" = "O",
+        "Ú" = "U",
+        "ü" = "u",
+        "Ü" = "U",
+        "ñ" = "n",
+        "Ñ" = "N"
+      ))) 
+
+# Ahora eliminamos los signos de puntuación 
+echterText <- echterText %>%  
+  mutate(
+    texto = str_to_lower(texto), 
+    texto = str_replace_all(texto, "[[:punct:]]", " "), 
+    texto = str_squish(texto)
+  )
+
+# Eliminamos números que puedan generar ruido en nuestro análisis
+echterText <- echterText %>%
+  mutate(
+    texto = str_replace_all(texto, "[0-9]+", " "),
+    texto = str_squish(texto)
+  )
+
+# Eliminamos urls que sean molestas para el análisis
+echterText <- echterText %>%
+  mutate(
+    texto = str_replace_all(texto, "https?://\\S+|www\\.\\S+", " "),
+    texto = str_squish(texto)
+  )
+
+# Eliminamos terminología ligada a sitios web o enlaces de internet
+echterText <- echterText %>%
+  mutate(
+    texto = str_remove_all(texto, "\\b(www|http|https|watch|youtube|xqedg|quot|href|com|amp|t|br|nrqw)\\b"),
+    texto = str_squish(texto)
+  )
+
+# Eliminamos emojis
+echterText <- echterText %>%
+  mutate(
+    texto = str_replace_all(texto, "[\\p{So}\\p{Cn}]", " "),
+    texto = str_squish(texto)
+  )
+
+echterText <- echterText %>%
+  mutate(doc_id = row_number())
+
+
+# Verificar poniendo los top 10 
+head(echterText$texto, 10)
+
+# Stopwords en español
+stopwords_es <- stopwords("spanish")
+
+# Lista palabras de ruido
+ruidos <- c(
+  # Nombres propios comunes en los comentarios
+  "jaja", "xd", "like", "video", "canal", "suscribete",
+  "laje", "agustin", "adela", "micha", "milei", "javier",
+  
+  # Palabras comunes sin contenido relevante
+  "hace", "cada", "yo", "los", "sin", "q", "era", "todos", "algo",
+  "esta", "esa", "todo", "porque", "tu", "ese", "tiene", "son", "las",
+  "o", "si", "mas", "solo", "v", "b", "asi", "tan", "siento", "como",
+  "del", "mi", "su", "sus", "una", "para", "pero", "es", "ser", "ver", "que",
+  "de", "a", "el", "la", "y", "en", "no", "me", "lo", "un", "se",
+  "por", "con", "le", "al", "cuando", "te", "eso", "este", "ya",
+  "donde", "cual", "quien", "fue", "sido", "estoy", "estas",
+  "hay", "aca", "alla", "ahi", "entonces", "pues", "ahora", "despues",
+  "antes", "luego", "siempre", "nunca", "tambien", "ni", "tus", "nuestro",
+  "nuestros", "nuestra", "nuestras", "vos", "usted", "ustedes", "ellos", "ellas",
+  "otro", "otros", "otra", "otras", "mismo", "misma", "mismos", "mismas",
+  "tal", "tales", "tanto", "tanta", "tantos", "tantas", "mucho", "mucha",
+  "muchos", "muchas", "poco", "poca", "pocos", "pocas", "muy", "menos",
+  "mejor", "peor", "mayor", "menor", "gran", "grande", "pequeno",
+  "bien", "mal", "aqui",
+  
+  # Verbos auxiliares
+  "va", "voy", "vas", "van", "ir", "ido", "iba", "iban",
+  "he", "has", "ha", "hemos", "han", "haber", "habido",
+  "soy", "eres", "somos", "estar", "estado",
+  "tengo", "tienes", "tenemos", "tienen", "tener", "tenido",
+  "hago", "haces", "hacemos", "hacen", "hacer", "hecho",
+  "digo", "dices", "dice", "decimos", "dicen", "decir", "dicho",
+  "puedo", "puedes", "puede", "podemos", "pueden", "poder", "podido",
+  "quiero", "quieres", "quiere", "queremos", "quieren", "querer", "querido",
+  "doy", "das", "da", "damos", "dan", "dar", "dado",
+  "veo", "ves", "vemos", "ven", "visto",
+  
+  # Pronombres y artículos extra
+  "esto", "esos", "esas", "aquel", "aquella", "aquellos", "aquellas",
+  "mio", "mia", "mios", "mias", "tuyo", "tuya", "tuyos", "tuyas",
+  "suyo", "suya", "suyos", "suyas",
+  
+  # Conectores / preposiciones
+  "sobre", "bajo", "entre", "desde", "hasta", "hacia", "mediante",
+  "durante", "contra", "segun", "tras", "excepto", "salvo",
+  
+  # Saludos / ruido emocional
+  "gracias", "excelente", "buena", "bueno", "saludos", "hola", "jajaja",
+  "ojala", "porfa", "porfavor", "favor", "saludo", "abrazo", "adelante", "siga",
+  "dije", "digan",
+  
+  # Ruido general español
+  "estan", "están", "aun", "aún", "ademas", "además",
+  "toda", "etc", "vez", "veces", "año", "años", "ano", "anos",
+  "creo", "parece", "alguien", "deja", "encanta", "puede", "sabe",
+  "parte", "tema", "temas", "hoy", "dia", "día", "tiempo", "momento",
+  "cosa", "cosas", "igual", "forma", "unica", "única", "cualquier",
+  "primer", "primera", "segundo", "tercero",
+  
+  # Noise / typos
+  "fnxlzcu", "hww", "ooooila",
+  
+  # Proper nouns irrelevantes
+  "abigail", "agus", "sra", "señora", "senora", "lucas", "lima",
+  "peru", "dea", "proape",
+  
+  # Ruido en inglés / alemán
+  "weiter", "einem", "mann",
+  
+  # Expresiones multi-palabra (las filtrarás en bigrams)
+  "anos atrás", "abigail gracias", "abigail dios", "gracias abigail",
+  "estan haciendo", "encanta escuchar", "sra abigail", "tres semanas",
+  "temas abordas", "mpios lucas", "dos veces", "excelente analisis",
+  "seria interesante", "buen programa", "siga adelante",
+  "senora gracias", "excelente presentación", "excelente entrevista",
+  "algun dia", "algun momento", "cualquier cosa",
+  "hoy dia", "dio cuenta", "excelente analisis", "sigue adelante",
+  "fuerte abrazo", "abrir flor", "doiorg", "doi org",
+  "excelente exposición", "ningun momento", "tiempo igual",
+  "dios hara", "dios hará", "unica forma", "estan quitando",
+  "llevan anos", "dedo patética", "dolor oseo", "bache intente",
+  "demos lugar",
+  
+  "hizo", "hace", "pasa", "paso", "ser", "seria", "todo", "todas",
+  "claro", "debe", "deberia", "hablar", "hablo", "habla", "dije", "digo",
+  "pregunta", "razon",
+  
+  
+  
+  "falta", "falta de", "pena", "vergüenza",
+  "tema", "temas", 
+  "totalmente", "claro", "pasa", "haciendolo", "haciendo",
+  "ejemplo",
+  "apoyo", "debe", "debería", "deberia",
+  "sos", "sos un", "sos una",
+  "quedo", "hizo", "trabajo",
+  "plena", "parte", 
+  "hizo", "habla", "hablar", "dijo", "dice"
+)
+
+# Tokenizar
+tokens <- echterText %>%
+  unnest_tokens(word, texto) %>%
+  filter(!word %in% stopwords_es) %>%
+  filter(!word %in% ruidos) %>%
+  filter(!grepl("isimo$|isima$|isimos$|isimas$", word)) %>%
+  filter(nchar(word) >= 3) %>%
+  select(doc_id, word)
+
+# Contar frecuencias
+frecuencias <- tokens %>%
+  count(word, sort = TRUE)
+
+# Seleccionar top 20
+top20 <- head(frecuencias, 20)
+print(top20)
+
+# Gráfico de barras
+com_lib_br <- ggplot(top20, aes(x = reorder(word, n), y = n)) +
+  geom_col(fill = "yellow", width = 0.7) +
+  coord_flip() +
+  labs(
+    title = "Top 20 términos más frecuentes\nComentarios de creadores libertarios",
+    x = "Término",
+    y = "Frecuencia",
+    caption = "Elaboración propia (Tupamaros) con datos de YouTube"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(
+      face = "bold",
+      size = 16,
+      hjust = 0.5
+    ),
+    axis.title.y = element_text(
+      margin = margin(r = 10)
+    ),
+    axis.title.x = element_text(
+      margin = margin(t = 10)
+    ),
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor = element_blank(),
+    plot.caption = element_text(
+      size = 10,
+      hjust = 1,
+      color = "gray40"
+    ),
+    axis.text = element_text(color = "gray20")
+  )
+
+# BIGRAMAS MEJORADOS
+# Crear bigramas
+bigrams <- echterText %>%
+  unnest_tokens(bigram, texto, token = "ngrams", n = 2)
+
+# Separar en dos columnas
+bigrams_sep <- bigrams %>%
+  separate(bigram, c("word1", "word2"), sep = " ")
+
+# Filtrar con criterios más estrictos
+bigrams_filt <- bigrams_sep %>%
+  filter(!word1 %in% stopwords_es,
+         !word2 %in% stopwords_es,
+         !word1 %in% ruidos,
+         !word2 %in% ruidos,
+         nchar(word1) >= 3,  
+         nchar(word2) >= 3,
+         !is.na(word1), 
+         !is.na(word2))
+
+bigram_counts <- bigrams_filt %>%
+  count(word1, word2, sort = TRUE) %>%
+  filter(n >= 10)  
+
+# Ver los top bigramas
+print(head(bigram_counts, 20))
+
+# Obtener términos del top 15 para el grafo
+top15_terms <- tokens %>%
+  count(word, sort = TRUE) %>%
+  slice_head(n = 10) %>%
+  pull(word)
+
+# Filtrar bigramas donde al menos una palabra esté en el top 15
+bigram_top15 <- bigram_counts %>%
+  filter(word1 %in% top15_terms | word2 %in% top15_terms) %>%
+  filter(n >= 10)  
+
+# Visualización de red de bigramas mejorada
+graph <- graph_from_data_frame(bigram_top15)
+
+# Red de bigramas 
+set.seed(123)
+
+com_lib_gr <- ggraph(graph, layout = "fr") +
+  geom_edge_link(
+    aes(edge_alpha = n, edge_width = n),
+    edge_colour = "gray75",
+    show.legend = FALSE
+  ) +
+  geom_node_point(
+    color = "yellow",
+    size = 5,
+    alpha = 0.9
+  ) +
+  geom_node_text(
+    aes(label = name),
+    repel = TRUE,
+    size = 3.5,
+    color = "gray15",
+    fontface = "bold"
+  ) +
+  theme_void() +
+  labs(
+    title = "Red de bigramas\nTérminos más frecuentes - Comentarios Libertarios",
+    caption = "Elaboración propia (Tupamaros) con datos de YouTube"
+  ) +
+  theme(
+    plot.title = element_text(
+      face = "bold",
+      size = 16,
+      hjust = 0.5
+    ),
+    plot.caption = element_text(
+      size = 10,
+      hjust = 1,
+      color = "gray40",
+      margin = margin(t = 10)
+    )
+  )
+
+# Convert bigrams into single-token strings with "_"
+bigrams_unidos <- bigrams_filt %>%
+  mutate(bigram_token = paste(word1, word2, sep = "_")) %>%
+  count(bigram_token, sort = TRUE)
+
+# View top bigram tokens
+head(bigrams_unidos, 30)
+
+
+# Add bigrams as "_"-joined tokens to the existing tokens object
+tokens <- tokens %>%
+  bind_rows(
+    bigrams_filt %>% 
+      transmute(word = paste(word1, word2, sep = "_"))
+  )
+
+
+# Contar frecuencias nuevamente
+frecuencias <- tokens %>%
+  count(word, sort = TRUE)
+
+# Seleccionar top 20 nuevamente
+top20 <- head(frecuencias, 20)
+print(top20)
+
+
+# Nube de palabras con bigramas como tokens
+wordcloud(
+  words = frecuencias$word,
+  freq = frecuencias$n,
+  min.freq = 5,  # Aumenté el mínimo para reducir ruido
+  max.words = 100,
+  colors = brewer.pal(8, "Dark2"),
+  random.order = FALSE
+)
+
+# ---------------- Topic models ----------------
+
+# Crear documento-término matriz (DTM) desde los tokens limpios
+dtm_data <- tokens %>%
+  count(doc_id, word) %>%
+  cast_dtm(doc_id, word, n)
+
+# Eliminar documentos vacíos
+row_sums <- slam::row_sums(dtm_data)
+cat("Documentos vacíos iniciales:", sum(row_sums == 0), "\n")
+dtm_data <- dtm_data[row_sums > 0, ]
+
+dtm_filtered <- removeSparseTerms(dtm_data, 0.999)  
+cat("Dimensiones después de filtrar:", dim(dtm_filtered), "\n")
+
+# Eliminar documentos vacíos después del filtrado
+row_sums_after <- slam::row_sums(dtm_filtered)
+cat("Documentos vacíos después:", sum(row_sums_after == 0), "\n")
+dtm_filtered <- dtm_filtered[row_sums_after > 0, ]
+
+# Verificar que tenemos suficientes datos
+if(nrow(dtm_filtered) < 10) {
+  stop("Muy pocos documentos. Necesitas al menos 10 comentarios con contenido válido.")
+}
+
+if(ncol(dtm_filtered) < 10) {
+  stop("Muy pocos términos únicos. Revisa tu lista de palabras de ruido.")
+}
+
+# Probar distintos valores de k
+k_values <- 2:5
+perplejidades <- c()
+
+for (k in k_values) {
+  set.seed(1234)
+  modelo_temp <- LDA(
+    dtm_filtered,
+    k = k,
+    method = "Gibbs",
+    control = list(
+      seed = 1234,
+      burnin = 300,
+      iter = 700,
+      thin = 50
+    )
+  )
+  
+  loglik <- logLik(modelo_temp)
+  perplejidad <- exp(-loglik / sum(dtm_filtered))
+  perplejidades <- c(perplejidades, perplejidad)
+}
+
+df_perp <- data.frame(k = k_values, perplejidad = perplejidades)
+
+# Seleccionar k mínimo
+k_optimo <- df_perp$k[which.min(df_perp$perplejidad)]
+cat("\n>>> K ÓPTIMO POR PERPLEJIDAD:", k_optimo, "\n")
+
+# Reemplazar el valor final de k por el óptimo
+k_topics <- k_optimo
+
+cat("\nUsando k =", k_topics, "tópicos\n")
+
+# Fijar semilla global
+set.seed(1234)
+
+# Configuración del modelo
+lda_model <- LDA(
+  dtm_filtered,
+  k = k_topics,
+  method = "Gibbs",
+  control = list(
+    seed = 1234,
+    burnin = 500,      
+    iter = 1000,       
+    thin = 50,         
+    best = TRUE,       
+    verbose = 50       
+  )
+)
+
+
+# ---------------- Extraer y analizar tópicos ----------------
+
+# Extraer términos por tópico (beta)
+terms_per_topic <- terms(lda_model, 10)  #top 10 por tópico
+
+# Mostrar términos por tópico
+for(i in 1:k_topics) {
+  cat("\nTÓPICO", i, ":\n")
+  cat(paste(terms_per_topic[, i], collapse = ", "), "\n")
+}
+
+# Crear vector vacío
+topic_labels <- rep(NA, k_topics)
+
+# Nombres de los tópicos
+topic_labels[1] <- "Entrevistas"
+topic_labels[2] <- "Gobierno argentino"
+topic_labels[3] <- "Familia tradicional"
+topic_labels[4] <- "Feminismo"
+topic_labels[5] <- "Aborto"
+
+topic_names <- data.frame(
+  topic = 1:k_topics,
+  nombre_topico = topic_labels
+)
+
+# Extraer matriz beta (probabilidades término-tópico)
+beta_matrix <- posterior(lda_model)$terms
+
+# Convertir a formato tidy manualmente
+topics_beta <- data.frame()
+for(i in 1:k_topics) {
+  topic_data <- data.frame(
+    topic = i,
+    term = colnames(beta_matrix),
+    beta = beta_matrix[i, ]
+  )
+  topics_beta <- rbind(topics_beta, topic_data)
+}
+
+# Agregar nombre del tópico
+topics_beta <- topics_beta %>%
+  left_join(topic_names, by = "topic") %>%
+  arrange(topic, desc(beta))
+
+# Top 10 términos por tópico
+top_terms <- topics_beta %>%
+  group_by(topic, nombre_topico) %>%
+  slice_max(beta, n = 10) %>%
+  ungroup() %>%
+  arrange(topic, desc(beta))
+
+# Mostrar resultados detallados
+for(i in 1:k_topics) {
+  cat("\n=== Tópico:", topic_labels[i], "(con probabilidades) ===\n")
+  topic_terms <- top_terms %>%
+    filter(topic == i) %>%
+    select(term, beta)
+  print(topic_terms, n = 10)
+}
+
+# Definir paleta de colores personalizada por tópico
+colores_topicos <- c(
+  "Feminismo" = "#9B59B6",                 # morado
+  "Gobierno argentino" = "#F1C40F",        # amarillo
+  "Aborto" = "darkgreen", 
+  "Familia tradicional" = "#3498DB",           # azul
+  "Entrevistas" = "#E74C3C"   # rojo
+)
+
+# Visualización de términos por tópico
+lib_como_top <- top_terms %>%
+  mutate(term = reorder_within(term, beta, nombre_topico)) %>%
+  ggplot(aes(beta, term, fill = nombre_topico)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ nombre_topico, scales = "free") +
+  scale_y_reordered() +
+  scale_fill_manual(values = colores_topicos) +
+  labs(
+    title = paste("Top 10 términos por tópico (k =", k_topics, ")"),
+    x = "Beta (probabilidad del término en el tópico)",
+    y = NULL
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold", size = 16, hjust = 0.5),
+    axis.text = element_text(color = "gray20"),
+    plot.caption = element_text(size = 10, hjust = 1, color = "gray40")
+  )
+
+# Análisis de comentarios por tópico
+
+# Extraer gamma (probabilidades documento-tópico)
+gamma_matrix <- posterior(lda_model)$topics
+
+# Convertir a formato tidy manualmente
+docs_gamma <- gamma_matrix %>%
+  as.data.frame() %>%
+  rownames_to_column("document") %>%
+  pivot_longer(
+    cols = -document,
+    names_to = "topic",
+    values_to = "gamma"
+  ) %>%
+  mutate(topic = as.numeric(topic))
+
+# Asignar cada comentario al tópico dominante
+docs_topico_principal <- docs_gamma %>%
+  group_by(document) %>%
+  slice_max(gamma, n = 1) %>%
+  ungroup() %>%
+  mutate(document = as.numeric(document))
+
+# Obtener los IDs de documentos que quedaron en dtm_filtered
+docs_ids_validos <- as.numeric(rownames(dtm_filtered))
+
+# Unir con datos originales
+comentarios_con_topico <- echterText %>%
+  mutate(doc_id = row_number()) %>%
+  filter(doc_id %in% docs_ids_validos) %>%
+  left_join(docs_topico_principal, by = c("doc_id" = "document")) %>%
+  left_join(topic_names, by = "topic")
+
+# Ver distribución de comentarios por tópico
+tabla_distribucion <- comentarios_con_topico %>%
+  count(topic, sort = TRUE) %>%
+  left_join(topic_names, by = "topic")
+
+print(tabla_distribucion)
+
+# Gráfico: número de comentarios por tópico (distribución)
+lib_com_k <- ggplot(tabla_distribucion, aes(x = nombre_topico, y = n, fill = nombre_topico)) +
+  geom_col(show.legend = FALSE) +
+  scale_fill_manual(values = colores_topicos) + 
+  labs(
+    title = paste("Número de comentarios por tópico (k =", k_topics, ")"),
+    x = "Tópico",
+    y = "Número de comentarios", 
+    caption = "Elaboración propia (Tupamaros) con datos de YouTube"
+  ) + theme_minimal(base_size = 13) +
+theme(
+  axis.text.x = element_text(angle = 20, hjust = 1),
+  plot.title = element_text(face = "bold", size = 16, hjust = 0.5),
+  axis.text = element_text(color = "gray20"),
+  plot.caption = element_text(size = 10, hjust = 1, color = "gray40")
+)
+
+```
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.width=7, fig.height=5, out.width="90%"}
+print(com_lib_br)
+```
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.width=7, fig.height=5, out.width="90%"}
+print(com_lib_gr)
+```
+
+
+## 1. Selección de k óptimo
+
+- Construcción de la DTM y filtrado de documentos vacíos.
+- Evaluación de perplejidad para k = 2 a 5.
+- k óptimo seleccionado: `r k_optimo`.
+
+
+## 2. Análisis por tópico 
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.width=7, fig.height=5, out.width="90%"}
+print(lib_como_top)
+```
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.width=7, fig.height=5, out.width="90%"}
+print(lib_com_k)
+```
+
+
+## 3. Tópicos
+
+En base a los términos más presentativos se les asignó manualmente un nombre a cada tópico: 
+
+- Entrevistas: Tópico más general con comentarios respecto a las entrevistas.
+- Gobierno argentino: "Presidente", "Argentina", "libertad", términos referentes al gobierno actual.
+- Familia tradicional: "Dios", "vida, "niños", "hijos", ideología", términos que indican un tema.
+- Feminismo: "Mujer", "feminismo", "feministas", términos referentes al movimiento.
+- Aborto: términos como "aborto", "pobre", "nadie", "persona", "hijo" dejan ver de qué se esta hablando.
+
+
+## 4. Interpretación 
+
+
+```{r, echo=FALSE, out.width="80%"}
+knitr::include_graphics("dos.png")
+```
+
+
+## 5. Hallazgos clave
+
+  1. Radicalización del Eje de Género: Los comentarios demuestran que la audiencia internaliza y prioriza los marcos machistas o anti-derechos del discurso producido. "Feminismo" es el tópico dominante, y la aparición de términos religiosos/morales en el tópico de "Familia tradicional" y el uso de insultos ideológicos (zurda, progre, ignorante) en los bigramas confirman la amplificación de narrativas clasistas, xenófobas y misóginas mencionadas en la literatura.
+  
+  2. Identidad Política: El lenguaje del discurso reproducido incluye apelaciones identitarias y de pertenencia (ej. viva, verdadera, trabajador, bendiga en los bigramas), funcionando como marcadores de pertenencia política.
+  
+  3. Alineación entre Productor y Audiencia: La alta frecuencia de términos como "mujeres", "hombre", "barbie", "pelicula" se correlaciona directamente con el enfoque en la "Crítica feminismo" y la "Batalla cultural" de los creadores, sugiriendo una validación y reproducción de estos marcos por parte de la comunidad.
+
+
+# **La lucha del contra discurso**
+
+El fenómeno del contradiscurso, en el contexto del ecosistema digital argentino, tiene una importancia fundamental que radica en la necesidad de confrontar y resignificar las narrativas políticas hegemónicas.
+
+
+Importancia del Contradiscurso:
+
+  - Evaluación de la Capacidad de Disputa: La motivación principal del análisis es evaluar la capacidad de los canales opositores para ofrecer contrapuntos discursivos que disputen o resignifiquen los marcos establecidos por los creadores libertarios.
+  - Mapeo de Espacios Alternativos: Una de las tareas cruciales del proyecto es mapear los espacios de contranarración, lo que implica identificar dónde y cómo la audiencia encuentra una alternativa frente a la retórica libertaria.
+  - Defensa de Derechos Sociales: El contradiscurso es importante porque sostiene marcos discursivos alternativos orientados específicamente a la defensa de los derechos sociales, la igualdad de género y la ampliación de libertades civiles.
+  - Laboratorio de Sentido Común: YouTube funciona como un espacio estructurante del sentido común político, y por lo tanto, el análisis del contradiscurso permite estudiar cómo las audiencias validan, disputan o transforman las ideologías en circulación.
+  
+  
+Fenómeno del Contradiscurso:
+
+El fenómeno del contradiscurso se manifiesta como un esfuerzo sistemático por establecer una agenda alternativa y resistir las narrativas de la ultraderecha:
+
+  - Creación de Marcos Alternativos: Los sectores opositores construyen marcos discursivos alternativos que se manifiestan en sus videos a través de la discusión de políticas públicas de género, la violencia simbólica y los derechos LGBT+.
+  - Resistencia de la Audiencia: El análisis del discurso reproducido revela que los comentarios de los canales opositores contienen narrativas de resistencia. Esto indica que la audiencia internaliza el rol de contranarración, articulando argumentos contra la misoginia y discutiendo el impacto social del ajuste nacional.
+  - Confrontación Estratégica: Este discurso se enfoca en la crítica a la desfinanciación de las políticas de género y la denuncia de la violencia simbólica promovida por referentes libertarios, buscando distanciarse del negacionismo del gobierno.
+  - Desafío Mediático: Si bien los sectores opositores sostienen estos marcos alternativos, el fenómeno es notable porque se desarrolla en un contexto en el que no logran obtener la misma relevancia mediática que han ganado los creadores libertarios.
+
+
+# **Modelado de tópicos subtítulos creadores de oposición (Discurso Producido)**
+
+
+## **Palabras y bigramas más frecuentes subtítulos creadores de oposición**
+
+
+```{r, warning=FALSE, message=FALSE, include=FALSE}
+
+# ---------------- Cargar librerías ----------------
+
+library(tidyverse)     # Limpieza y manipulación
+library(openxlsx)      # Exportar Excel
+library(tidytext)      # Tokenizar texto
+library(readxl)        # Leer Excel
+library(topicmodels)   # Modelos LDA
+library(tm)            # Stopwords español
+library(ggplot2)       # Gráficos estadísticos
+library(wordcloud)     # Nube de palabras
+library(RColorBrewer)  # Paletas de color
+library(igraph)        # Redes de texto
+library(ggraph)        # Graficar grafos
+library(tidyr)         
+library(slam)          
+
+# ---------------- Comienza el procesamiento del Excel ----------------
+
+# Cargar los comentarios de los videos de tres creadores
+df_gelatina_subs   <- read_excel("Datos/Subtitulos/subtitulos_gelatina.xlsx")
+df_futurorockfm_subs <- read_excel("Datos/Subtitulos/subtitulos_futurock.xlsx")
+df_cenital_subs <- read_excel("Datos/Subtitulos/subtitulos_cenital.xlsx")
+
+#Combinar en un solo data_frame
+subs_todos <- bind_rows(
+  df_gelatina_subs,
+  df_futurorockfm_subs,
+  df_cenital_subs
+)
+
+# Verificar nombres de columnas
+names(subs_todos)
+
+# Usar la columna textOriginal
+echterText <- subs_todos %>%
+  mutate(texto = as.character(texto))
+
+# Limpieza: acentos, minúsculas, puntuación y emojis
+echterText <- echterText %>%
+  mutate(
+    texto = str_replace_all(
+      texto, c( 
+        "á" = "a",
+        "é" = "e",
+        "í" = "i",
+        "ó" = "o",
+        "ú" = "u",
+        "Á" = "A",
+        "É" = "E",
+        "Í" = "I",
+        "Ó" = "O",
+        "Ú" = "U",
+        "ü" = "u",
+        "Ü" = "U",
+        "ñ" = "n",
+        "Ñ" = "N"
+      ))) 
+
+# Ahora eliminamos los signos de puntuación 
+echterText <- echterText %>%  
+  mutate(
+    texto = str_to_lower(texto), 
+    texto = str_replace_all(texto, "[[:punct:]]", " "), 
+    texto = str_squish(texto)
+  )
+
+# Eliminamos números que puedan generar ruido en nuestro análisis
+echterText <- echterText %>%
+  mutate(
+    texto = str_replace_all(texto, "[0-9]+", " "),
+    texto = str_squish(texto)
+  )
+
+# Eliminamos urls que sean molestas para el análisis
+echterText <- echterText %>%
+  mutate(
+    texto = str_replace_all(texto, "https?://\\S+|www\\.\\S+", " "),
+    texto = str_squish(texto)
+  )
+
+# Eliminamos terminología ligada a sitios web o enlaces de internet
+echterText <- echterText %>%
+  mutate(
+    texto = str_remove_all(texto, "\\b(www|http|https|watch|youtube|xqedg|quot|href|com|amp|t|br|nrqw)\\b"),
+    texto = str_squish(texto)
+  )
+
+# Eliminamos emojis
+echterText <- echterText %>%
+  mutate(
+    texto = str_replace_all(texto, "[\\p{So}\\p{Cn}]", " "),
+    texto = str_squish(texto)
+  )
+
+echterText <- echterText %>%
+  mutate(doc_id = row_number())
+
+
+# Verificar poniendo los top 10 
+head(echterText$texto, 10)
+
+# Stopwords en español
+stopwords_es <- stopwords("spanish")
+
+# Lista palabras de ruido
+ruidos <- c(
+  # Nombres propios comunes en los comentarios
+  "jaja", "xd", "like", "video", "canal", "suscribete",
+  "laje", "agustin", "ofelia", "fernandez", "milei", "javier",
+  "julia", "Rosemberg", "gustavo", "cordera", "pedro", "rosemblat",
+  "kirchner", "cristina", "nestor", "ari", "lijalad", "juan", "manuel",
+  "karina", "miley", "ramos", "mejia", "mirta", "legran", "santos", "vargas",
+  "santiago", "caputo", "jose", "luis", "taylor", "swift", "patricia", "burrich",
+  
+  
+  
+  # Palabras comunes sin contenido relevante
+  "hace", "cada", "yo", "los", "sin", "q", "era", "todos", "algo",
+  "esta", "esa", "todo", "porque", "tu", "ese", "tiene", "son", "las",
+  "o", "si", "mas", "solo", "v", "b", "asi", "tan", "siento", "como",
+  "del", "mi", "su", "sus", "una", "para", "pero", "es", "ser", "ver", "que",
+  "de", "a", "el", "la", "y", "en", "no", "me", "lo", "un", "se",
+  "por", "con", "le", "al", "cuando", "te", "eso", "este", "ya",
+  "donde", "cual", "quien", "fue", "sido", "estoy", "estas",
+  "hay", "aca", "alla", "ahi", "entonces", "pues", "ahora", "despues",
+  "antes", "luego", "siempre", "nunca", "tambien", "ni", "tus", "nuestro",
+  "nuestros", "nuestra", "nuestras", "vos", "usted", "ustedes", "ellos", "ellas",
+  "otro", "otros", "otra", "otras", "mismo", "misma", "mismos", "mismas",
+  "tal", "tales", "tanto", "tanta", "tantos", "tantas", "mucho", "mucha",
+  "muchos", "muchas", "poco", "poca", "pocos", "pocas", "muy", "menos",
+  "mejor", "peor", "mayor", "menor", "gran", "grande", "pequeno",
+  "bien", "mal", "aqui",
+  
+  # Verbos auxiliares
+  "va", "voy", "vas", "van", "ir", "ido", "iba", "iban",
+  "he", "has", "ha", "hemos", "han", "haber", "habido",
+  "soy", "eres", "somos", "estar", "estado",
+  "tengo", "tienes", "tenemos", "tienen", "tener", "tenido",
+  "hago", "haces", "hacemos", "hacen", "hacer", "hecho",
+  "digo", "dices", "dice", "decimos", "dicen", "decir", "dicho",
+  "puedo", "puedes", "puede", "podemos", "pueden", "poder", "podido",
+  "quiero", "quieres", "quiere", "queremos", "quieren", "querer", "querido",
+  "doy", "das", "da", "damos", "dan", "dar", "dado",
+  "veo", "ves", "vemos", "ven", "visto",
+  
+  # Pronombres y artículos extra
+  "esto", "esos", "esas", "aquel", "aquella", "aquellos", "aquellas",
+  "mio", "mia", "mios", "mias", "tuyo", "tuya", "tuyos", "tuyas",
+  "suyo", "suya", "suyos", "suyas",
+  
+  # Conectores / preposiciones
+  "sobre", "bajo", "entre", "desde", "hasta", "hacia", "mediante",
+  "durante", "contra", "segun", "tras", "excepto", "salvo",
+  
+  # Saludos / ruido emocional
+  "gracias", "excelente", "buena", "bueno", "saludos", "hola", "jajaja",
+  "ojala", "porfa", "porfavor", "favor", "saludo", "abrazo", "adelante", "siga",
+  "dije", "digan",
+  
+  # Ruido general español
+  "estan", "están", "aun", "aún", "ademas", "además",
+  "toda", "etc", "vez", "veces", "año", "años", "ano", "anos",
+  "creo", "parece", "alguien", "deja", "encanta", "puede", "sabe",
+  "parte", "tema", "temas", "hoy", "dia", "día", "tiempo", "momento",
+  "cosa", "cosas", "igual", "forma", "unica", "única", "cualquier",
+  "primer", "primera", "segundo", "tercero",
+  
+  # Noise / typos
+  "fnxlzcu", "hww", "ooooila",
+  
+  # Proper nouns irrelevantes
+  "abigail", "agus", "sra", "señora", "senora", "lucas", "lima",
+  "peru", "dea", "proape",
+  
+  # Ruido en inglés / alemán
+  "weiter", "einem", "mann",
+  
+  # Expresiones multi-palabra (las filtrarás en bigrams)
+  "anos atrás", "abigail gracias", "abigail dios", "gracias abigail",
+  "estan haciendo", "encanta escuchar", "sra abigail", "tres semanas",
+  "temas abordas", "mpios lucas", "dos veces", "excelente analisis",
+  "seria interesante", "buen programa", "siga adelante",
+  "senora gracias", "excelente presentación", "excelente entrevista",
+  "algun dia", "algun momento", "cualquier cosa",
+  "hoy dia", "dio cuenta", "excelente analisis", "sigue adelante",
+  "fuerte abrazo", "abrir flor", "doiorg", "doi org",
+  "excelente exposición", "ningun momento", "tiempo igual",
+  "dios hara", "dios hará", "unica forma", "estan quitando",
+  "llevan anos", "dedo patética", "dolor oseo", "bache intente",
+  "demos lugar",
+  
+  "hizo", "hace", "pasa", "paso", "ser", "seria", "todo", "todas",
+  "claro", "debe", "deberia", "hablar", "hablo", "habla", "dije", "digo",
+  "pregunta", "razon",
+  
+  
+  
+  "falta", "falta de", "pena", "vergüenza",
+  "tema", "temas", 
+  "totalmente", "claro", "pasa", "haciendolo", "haciendo",
+  "ejemplo",
+  "apoyo", "debe", "debería", "deberia",
+  "sos", "sos un", "sos una",
+  "quedo", "hizo", "trabajo",
+  "plena", "parte", 
+  "hizo", "habla", "hablar", "dijo", "dice", "digamos", "habia","tipo", "manera", "tenes", "mira",
+  "dos", "recien","lado", "fijate", "tenia","llama", "nueva", "dos", "incluso", "traves", 
+  "sino", "nacio", "partir", "ningun", "dentro", "lugar", "dio", "miren", "decia", "algun", "viene",
+  "alguna", "nadie", "medio", "casa", "respecto", "importante", 
+  "quisieras_colaborar", "maria_julia", "efectivamente", "supuesto", "ayer",
+  "hacerlo_uniendote", "importantes_librerias", "pudieras_colaborar", "campanita_musica",
+  "patreon_siguiendo", "hijos", "sabes", "cuenta", 
+  "patreon_siguiendo", "hacerlo_uniendote", "comentario_suscribiendote", "sabes", "buenos_dias",
+  "juan_pablo", "habian_encontrado", "titulado_generacion", "boton_unirse", "importantes_librerias", 
+  "musica_bienvenidos", "maria_julia", "maria", "julia", "patreon", "siguiendo", "hacerlo", "uniendote",
+  "suscribiendote", "punto", "buenos_dias", "buenos", "dias", "podes_encontrarlo", 
+  "podes", "encontrarlo", "etcetera_etcetera", "etcetera", "reciente_libro", "reciente", "libro",
+  "importantes", "librerias", "libreria", "donaciones_libres", "donaciones", "libres", "encuentra", "disponible",
+  "encuentra_disponible", "quisieras", "marcela", "pagano", "pablo", "anduesa", "barbara", "dirroco", "poner",
+  "demas", "monton", "pudieras", "habian", "boton", "unirse", "musica", "campanita",
+  
+  # Diminutivos comunes
+  "poquito", "poquita", "poquitos", "poquitas",
+  "muchito", "muchita", "muchitos", "muchitas",
+  "ratito", "ratitos", "ratita", "ratitas",
+  "momentito", "momentitos",
+  "ahorita", "ahoritita",
+  "cosita", "cositas",
+  "amiguito", "amiguita", "amiguitos", "amiguitas",
+  "chiquito", "chiquita", "chiquitos", "chiquitas",
+  "niñito", "niñita", "niñitos", "niñitas",
+  "pueblito", "pueblitos",
+  "casita", "casitas",
+  "perrito", "perrita", "perritos", "perritas",
+  "gatito", "gatita", "gatitos", "gatitas",
+  "abuelito", "abuelita", "abuelitos", "abuelitas",
+  "papito", "mamita",
+  "hermanito", "hermanita", "hermanitos", "hermanitas",
+  "noviecita", "noviecitos",
+  "besito", "besitos",
+  "cafecito", "cafecitos",
+  "tiempito", "tiempitos",
+  "boludito", "boluditos",
+  
+  # Expresiones argentinas coloquiales
+  "che", "boludo", "boluda", "boludeces",
+  "quilombo", "quilombito",
+  "laburo", "laburito",
+  "bondi", "colectivo",
+  "mina", "minita",
+  "pibe", "piba", "pibito", "pibita",
+  "chabón", "chabona",
+  "guita", "manguito", "mangos",
+  "fiaca", "fiacón",
+  "morfi", "morfar",
+  "birra", "birrita",
+  "matecito", "mate",
+  "asado", "asadito",
+  "locura", "locurita",
+  "piola", "repiola",
+  "copado", "copadito",
+  "trucho", "truchito",
+  "macana", "macanita",
+  "cacho", "cachito",
+  "bondiola", "choripán",
+  "quilombazo", "quilombito",
+  "re", "recontra", "altísimo", "altísima",
+  "posta", "altísimamente",
+  "bancá", "aguante", "aguantá",
+  "dale", "andá", "vení",
+  "uh", "epa", "ojo", "pucha"
+  
+)
+
+# Tokenizar
+tokens <- echterText %>%
+  unnest_tokens(word, texto) %>%
+  filter(!word %in% stopwords_es) %>%
+  filter(!word %in% ruidos) %>%
+  filter(!grepl("isimo$|isima$|isimos$|isimas$", word)) %>%
+  filter(nchar(word) >= 3) %>%
+  select(doc_id, word)
+
+# Contar frecuencias
+frecuencias <- tokens %>%
+  count(word, sort = TRUE)
+
+# Seleccionar top 20
+top20 <- head(frecuencias, 20)
+print(top20)
+
+# Gráfico de barras - Oposición
+sub_op_br <- ggplot(top20, aes(x = reorder(word, n), y = n)) +
+  geom_col(fill = "#3B82F6", width = 0.7) +
+  coord_flip() +
+  labs(
+    title = "Top 20 términos más frecuentes\nSubtítulos de videos opositores",
+    x = "Término",
+    y = "Frecuencia",
+    caption = "Elaboración propia (Tupamaros) con datos de YouTube"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold", size = 16, hjust = 0.5),
+    axis.title.y = element_text(margin = margin(r = 10)),
+    axis.title.x = element_text(margin = margin(t = 10)),
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor = element_blank(),
+    plot.caption = element_text(size = 10, hjust = 1, color = "gray40"),
+    axis.text = element_text(color = "gray20")
+  )
+
+# BIGRAMAS MEJORADOS
+# Crear bigramas
+bigrams <- echterText %>%
+  unnest_tokens(bigram, texto, token = "ngrams", n = 2)
+
+# Separar en dos columnas
+bigrams_sep <- bigrams %>%
+  separate(bigram, c("word1", "word2"), sep = " ")
+
+# Filtrar con criterios más estrictos
+bigrams_filt <- bigrams_sep %>%
+  filter(!word1 %in% stopwords_es,
+         !word2 %in% stopwords_es,
+         !word1 %in% ruidos,
+         !word2 %in% ruidos,
+         nchar(word1) >= 3,  # Palabras de al menos 3 caracteres
+         nchar(word2) >= 3,
+         !is.na(word1), 
+         !is.na(word2))
+
+bigram_counts <- bigrams_filt %>%
+  count(word1, word2, sort = TRUE) %>%
+  filter(n >= 3)  # Solo bigramas que aparezcan al menos 3 veces
+
+# Ver los top bigramas
+print(head(bigram_counts, 30))
+
+# Obtener términos del top 20 para el grafo
+top20_terms <- tokens %>%
+  count(word, sort = TRUE) %>%
+  slice_head(n = 20) %>%
+  pull(word)
+
+# Filtrar bigramas donde al menos una palabra esté en el top 20
+bigram_top20 <- bigram_counts %>%
+  filter(word1 %in% top20_terms | word2 %in% top20_terms) %>%
+  filter(n >= 3)  # Mínimo 3 apariciones
+
+# Visualización de red de bigramas mejorada
+graph <- graph_from_data_frame(bigram_top20)
+
+# Red de bigramas - Subtítulos de oposición
+set.seed(123)
+sub_op_gr <- ggraph(graph, layout = "fr") +
+  geom_edge_link(aes(edge_alpha = n, edge_width = n), 
+                 edge_colour = "gray70",
+                 show.legend = FALSE) +
+  geom_node_point(color = "#3B82F6", size = 5) +
+  geom_node_text(aes(label = name), vjust = 1.5, hjust = 0.5, size = 3.5, color = "gray20") +
+  theme_void() +
+  labs(
+    title = "Red de bigramas\nTérminos más frecuentes - Subtítulos de oposición",
+    caption = "Elaboración propia (Tupamaros) con datos de YouTube"
+  ) +
+  theme(
+    plot.title = element_text(face = "bold", size = 16, hjust = 0.5),
+    plot.caption = element_text(size = 10, hjust = 1, color = "gray40")
+  )
+
+# Convert bigrams into single-token strings with "_"
+bigrams_unidos <- bigrams_filt %>%
+  mutate(bigram_token = paste(word1, word2, sep = "_")) %>%
+  count(bigram_token, sort = TRUE)
+
+# View top bigram tokens
+head(bigrams_unidos, 30)
+
+
+# Add bigrams as "_"-joined tokens to the existing tokens object
+tokens <- tokens %>%
+  bind_rows(
+    bigrams_filt %>% 
+      transmute(word = paste(word1, word2, sep = "_"))
+  )
+
+
+# Contar frecuencias nuevamente
+frecuencias <- tokens %>%
+  count(word, sort = TRUE)
+
+# Seleccionar top 20 nuevamente
+top20 <- head(frecuencias, 20)
+print(top20)
+
+# ---------------- Topic models ----------------
+
+# Crear documento-término matriz (DTM) desde los tokens limpios
+dtm_data <- tokens %>%
+  count(doc_id, word) %>%
+  cast_dtm(doc_id, word, n)
+
+# Eliminar documentos vacíos
+row_sums <- slam::row_sums(dtm_data)
+cat("Documentos vacíos iniciales:", sum(row_sums == 0), "\n")
+dtm_data <- dtm_data[row_sums > 0, ]
+
+dtm_filtered <- removeSparseTerms(dtm_data, 0.999)  
+cat("Dimensiones después de filtrar:", dim(dtm_filtered), "\n")
+
+# Eliminar documentos vacíos después del filtrado
+row_sums_after <- slam::row_sums(dtm_filtered)
+cat("Documentos vacíos después:", sum(row_sums_after == 0), "\n")
+dtm_filtered <- dtm_filtered[row_sums_after > 0, ]
+
+# Verificar que tenemos suficientes datos
+if(nrow(dtm_filtered) < 10) {
+  stop("Muy pocos documentos. Necesitas al menos 10 con contenido válido.")
+}
+
+if(ncol(dtm_filtered) < 10) {
+  stop("Muy pocos términos únicos. Revisa tu lista de palabras de ruido.")
+}
+
+# Probar distintos valores de k
+k_values <- 2:5
+perplejidades <- c()
+
+for (k in k_values) {
+  set.seed(1234)
+  modelo_temp <- LDA(
+    dtm_filtered,
+    k = k,
+    method = "Gibbs",
+    control = list(
+      seed = 1234,
+      burnin = 300,
+      iter = 700,
+      thin = 50
+    )
+  )
+  
+  loglik <- logLik(modelo_temp)
+  perplejidad <- exp(-loglik / sum(dtm_filtered))
+  perplejidades <- c(perplejidades, perplejidad)
+}
+
+df_perp <- data.frame(k = k_values, perplejidad = perplejidades)
+
+# Seleccionar k mínimo
+k_optimo <- df_perp$k[which.min(df_perp$perplejidad)]
+cat("\n>>> K ÓPTIMO POR PERPLEJIDAD:", k_optimo, "\n")
+
+# Reemplazar el valor final de k por el óptimo
+k_topics <- k_optimo
+
+cat("\nUsando k =", k_topics, "tópicos\n")
+
+# Fijar semilla global
+set.seed(1234)
+
+# Configuración del modelo
+lda_model <- LDA(
+  dtm_filtered,
+  k = k_topics,
+  method = "Gibbs",
+  control = list(
+    seed = 1234,
+    burnin = 500,      
+    iter = 1000,       
+    thin = 50,         
+    best = TRUE,       
+    verbose = 50       
+  )
+)
+
+
+# ---------------- Extraer y analizar tópicos ----------------
+
+# Extraer términos por tópico (beta)
+terms_per_topic <- terms(lda_model, 10)  #top 10 por tópico
+
+# Mostrar términos por tópico
+for(i in 1:k_topics) {
+  cat("\nTÓPICO", i, ":\n")
+  cat(paste(terms_per_topic[, i], collapse = ", "), "\n")
+}
+
+# Crear vector vacío
+topic_labels <- rep(NA, k_topics)
+
+# Nombres de los tópicos
+topic_labels[1] <- "Verdad"
+topic_labels[2] <- "Gobierno argentino"
+topic_labels[3] <- "Libertarismo"
+topic_labels[4] <- "Peronismo"
+topic_labels[5] <- "Latinoamérica"
+
+topic_names <- data.frame(
+  topic = 1:k_topics,
+  nombre_topico = topic_labels
+)
+
+# Extraer matriz beta (probabilidades término-tópico)
+beta_matrix <- posterior(lda_model)$terms
+
+# Convertir a formato tidy manualmente
+topics_beta <- data.frame()
+for(i in 1:k_topics) {
+  topic_data <- data.frame(
+    topic = i,
+    term = colnames(beta_matrix),
+    beta = beta_matrix[i, ]
+  )
+  topics_beta <- rbind(topics_beta, topic_data)
+}
+
+# Agregar nombre del tópico
+topics_beta <- topics_beta %>%
+  left_join(topic_names, by = "topic") %>%
+  arrange(topic, desc(beta))
+
+# Top 10 términos por tópico
+top_terms <- topics_beta %>%
+  group_by(topic, nombre_topico) %>%
+  slice_max(beta, n = 10) %>%
+  ungroup() %>%
+  arrange(topic, desc(beta))
+
+# Mostrar resultados detallados
+for(i in 1:k_topics) {
+  cat("\n=== Tópico:", topic_labels[i], "(con probabilidades) ===\n")
+  topic_terms <- top_terms %>%
+    filter(topic == i) %>%
+    select(term, beta)
+  print(topic_terms, n = 10)
+}
+
+# Definir paleta de colores personalizada por tópico
+colores_topicos <- c(
+  "Gobierno argentino" = "#9B59B6",                 # morado
+  "Libertarismo" = "#F1C40F",        # amarillo
+  "Verdad" = "darkgreen", 
+  "Peronismo" = "#3498DB",           # azul
+  "Latinoamérica" = "#E74C3C"   # rojo
+)
+
+# Visualización de términos por tópico
+op_sub_tp <- top_terms %>%
+  mutate(term = reorder_within(term, beta, nombre_topico)) %>%
+  ggplot(aes(beta, term, fill = nombre_topico)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ nombre_topico, scales = "free") +
+  scale_y_reordered() +
+  scale_fill_manual(values = colores_topicos) +
+  labs(
+    title = paste("Top 10 términos por tópico (k =", k_topics,")"),
+    x = "Beta (probabilidad del término en el tópico)",
+    y = NULL,
+    caption = "Elaboración propia (Tupamaros) con datos de YouTube"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold", size = 16, hjust = 0.5),
+    axis.text = element_text(size = 5, color = "gray20"),
+    plot.caption = element_text(size = 10, hjust = 1, color = "gray40")
+  )
+
+# Análisis de comentarios por tópico
+
+# Extraer gamma (probabilidades documento-tópico)
+gamma_matrix <- posterior(lda_model)$topics
+
+# Convertir a formato tidy manualmente
+docs_gamma <- gamma_matrix %>%
+  as.data.frame() %>%
+  rownames_to_column("document") %>%
+  pivot_longer(
+    cols = -document,
+    names_to = "topic",
+    values_to = "gamma"
+  ) %>%
+  mutate(topic = as.numeric(topic))
+
+# Asignar cada comentario al tópico dominante
+docs_topico_principal <- docs_gamma %>%
+  group_by(document) %>%
+  slice_max(gamma, n = 1) %>%
+  ungroup() %>%
+  mutate(document = as.numeric(document))
+
+# Obtener los IDs de documentos que quedaron en dtm_filtered
+docs_ids_validos <- as.numeric(rownames(dtm_filtered))
+
+# Unir con datos originales
+comentarios_con_topico <- echterText %>%
+  mutate(doc_id = row_number()) %>%
+  filter(doc_id %in% docs_ids_validos) %>%
+  left_join(docs_topico_principal, by = c("doc_id" = "document")) %>%
+  left_join(topic_names, by = "topic")
+
+# Ver distribución de comentarios por tópico
+tabla_distribucion <- comentarios_con_topico %>%
+  count(topic, sort = TRUE) %>%
+  left_join(topic_names, by = "topic")
+
+print(tabla_distribucion)
+
+# Gráfico: número de comentarios por tópico (distribución)
+op_sub_k <- ggplot(tabla_distribucion, aes(x = nombre_topico, y = n, fill = nombre_topico)) +
+  geom_col(show.legend = FALSE, width = 0.7) +
+  scale_fill_manual(values = colores_topicos) +
+  labs(
+    title = paste("Número de comentarios por tópico (k =", k_topics,")"),
+    x = "Tópico",
+    y = "Número de comentarios",
+    caption = "Elaboración propia (Tupamaros) con datos de YouTube"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold", size = 16, hjust = 0.5),
+    axis.title.x = element_text(margin = margin(t = 10)),
+    axis.title.y = element_text(margin = margin(r = 10)),
+    axis.text.x = element_text(angle = 20, hjust = 1, color = "gray20"),
+    axis.text.y = element_text(color = "gray20"),
+    plot.caption = element_text(size = 10, hjust = 1, color = "gray40"),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor = element_blank()
+  )
+```
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.width=7, fig.height=5, out.width="90%"}
+print(sub_op_br)
+```
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.width=7, fig.height=5, out.width="90%"}
+print(sub_op_gr)
+```
+
+
+## 1. Selección de k óptimo
+
+- Construcción de la DTM y filtrado de documentos vacíos.
+- Evaluación de perplejidad para k = 2 a 5.
+- k óptimo seleccionado: `r k_optimo`.
+
+
+## 2. Análisis por tópico 
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.width=7, fig.height=5, out.width="90%"}
+print(op_sub_tp)
+```
+
+
+## 3. Tópicos
+
+En base a los términos más presentativos se les asignó manualmente un nombre a cada tópico: 
+
+- Verdad: Términos como "verdad", "idea", "mundo", "real", sugieren la temática del tópico.
+- Gobierno argentino: Enfocado en el análisis gubernamental, términos representativos como "gobierno", "ley".
+- Libertarismo: Términos referentes a la ideología económica libertaria.
+- Peronismo: Enfáisis en términos como "peronismo", "peron" o "rosas", representativas del movimiento politico.
+- Latinoamérica: Referencia a "america_latina" y otros países.
+
+
+## 4. Interpretación
+
+
+```{r, echo=FALSE, out.width="80%"}
+knitr::include_graphics("tres.png")
+```
+
+
+## 5. Hallazgos clave
+
+
+  1. Marco Histórico-Estructural: A diferencia del discurso libertario centrado en lo ideológico y anti-género, el discurso opositor utiliza la historia argentina (ej. rosas, peronismo) y el análisis estructural (sistema_politico, reforma_laboral) para enmarcar su crítica.
+  
+  2. Disputa de la Derecha: La oposición dedica un tópico específico a la crítica del movimiento libertario y la derecha (Libertarismo, libertad_avanza, derecha), cumpliendo su rol de ofrecer contrapuntos y denunciar la violencia simbólica.
+  
+  3. Inclusión de Temas de Derechos: Aunque sus tópicos centrales son políticos, los videos abordan específicamente "políticas públicas de género," "violencia simbólica" y "derechos LGBT+", sosteniendo marcos pro derechos humanos y de defensa de la igualdad.
+
+
+# **Modelado de tópicos comentarios creadores de oposición (Discurso Reproducido)**
+
+
+## **Palabras y bigramas más frecuentes comentarios creadores de oposición**
+
+
+```{r, warning=FALSE, message=FALSE, include=FALSE}
+# ---------------- Cargar librerías ----------------
+
+library(tidyverse)     # Limpieza y manipulación
+library(openxlsx)      # Exportar Excel
+library(tidytext)      # Tokenizar texto
+library(readxl)        # Leer Excel
+library(topicmodels)   # Modelos LDA
+library(tm)            # Stopwords español
+library(ggplot2)       # Gráficos estadísticos
+library(wordcloud)     # Nube de palabras
+library(RColorBrewer)  # Paletas de color
+library(igraph)        # Redes de texto
+library(ggraph)        # Graficar grafos
+library(tidyr)         
+library(slam)          
+
+# ---------------- Comienza el procesamiento del Excel ----------------
+
+# Cargar los comentarios de los videos de tres creadores
+df_gelatina   <- read_excel("Datos/Comentarios/comentarios_youtube_gelatina_decena.xlsx")
+df_futurorockfm <- read_excel("Datos/Comentarios/comentarios_youtube_futurorockanrolleros_decena.xlsx")
+df_cenital <- read_excel("Datos/Comentarios/comentarios_youtube_cenitalgrande_decena.xlsx")
+
+#Combinar en un solo data_frame
+comentarios_todos <- bind_rows(
+  df_gelatina,
+  df_futurorockfm,
+  df_cenital
+)
+
+# Verificar nombres de columnas
+names(comentarios_todos)
+
+# Usar la columna texto
+echterText <- comentarios_todos %>%
+  mutate(texto = as.character(texto))
+
+# Limpieza: acentos, minúsculas, puntuación y emojis
+echterText <- echterText %>%
+  mutate(
+    texto = str_replace_all(
+      texto, c( 
+        "á" = "a",
+        "é" = "e",
+        "í" = "i",
+        "ó" = "o",
+        "ú" = "u",
+        "Á" = "A",
+        "É" = "E",
+        "Í" = "I",
+        "Ó" = "O",
+        "Ú" = "U",
+        "ü" = "u",
+        "Ü" = "U",
+        "ñ" = "n",
+        "Ñ" = "N"
+      ))) 
+
+# Ahora eliminamos los signos de puntuación 
+echterText <- echterText %>%  
+  mutate(
+    texto = str_to_lower(texto), 
+    texto = str_replace_all(texto, "[[:punct:]]", " "), 
+    texto = str_squish(texto)
+  )
+
+# Eliminamos números que puedan generar ruido en nuestro análisis
+echterText <- echterText %>%
+  mutate(
+    texto = str_replace_all(texto, "[0-9]+", " "),
+    texto = str_squish(texto)
+  )
+
+# Eliminamos urls que sean molestas para el análisis
+echterText <- echterText %>%
+  mutate(
+    texto = str_replace_all(texto, "https?://\\S+|www\\.\\S+", " "),
+    texto = str_squish(texto)
+  )
+
+# Eliminamos terminología ligada a sitios web o enlaces de internet
+echterText <- echterText %>%
+  mutate(
+    texto = str_remove_all(texto, "\\b(www|http|https|watch|youtube|xqedg|quot|href|com|amp|t|br|nrqw)\\b"),
+    texto = str_squish(texto)
+  )
+
+# Eliminamos emojis
+echterText <- echterText %>%
+  mutate(
+    texto = str_replace_all(texto, "[\\p{So}\\p{Cn}]", " "),
+    texto = str_squish(texto)
+  )
+
+echterText <- echterText %>%
+  mutate(doc_id = row_number())
+
+
+# Verificar poniendo los top 10 
+head(echterText$texto, 10)
+
+# Stopwords en español
+stopwords_es <- stopwords("spanish")
+
+# Lista palabras de ruido
+ruidos <- c(
+  # Nombres propios comunes en los comentarios
+  "jaja", "xd", "like", "video", "canal", "suscribete",
+  "laje", "agustin", "ofelia", "fernandez", "milei", "javier",
+  "julia", "Rosemberg", "gustavo", "cordera", "pedro", "rosemblat",
+  "kirchner", "cristina", "nestor", "ari", "lijalad", "juan", "manuel",
+  "karina", "miley", "ramos", "mejia", "mirta", "legran", "santos", "vargas",
+  "santiago", "caputo", "jose", "luis", "taylor", "swift", "patricia", "burrich",
+  
+  
+  
+  # Palabras comunes sin contenido relevante
+  "hace", "cada", "yo", "los", "sin", "q", "era", "todos", "algo",
+  "esta", "esa", "todo", "porque", "tu", "ese", "tiene", "son", "las",
+  "o", "si", "mas", "solo", "v", "b", "asi", "tan", "siento", "como",
+  "del", "mi", "su", "sus", "una", "para", "pero", "es", "ser", "ver", "que",
+  "de", "a", "el", "la", "y", "en", "no", "me", "lo", "un", "se",
+  "por", "con", "le", "al", "cuando", "te", "eso", "este", "ya",
+  "donde", "cual", "quien", "fue", "sido", "estoy", "estas",
+  "hay", "aca", "alla", "ahi", "entonces", "pues", "ahora", "despues",
+  "antes", "luego", "siempre", "nunca", "tambien", "ni", "tus", "nuestro",
+  "nuestros", "nuestra", "nuestras", "vos", "usted", "ustedes", "ellos", "ellas",
+  "otro", "otros", "otra", "otras", "mismo", "misma", "mismos", "mismas",
+  "tal", "tales", "tanto", "tanta", "tantos", "tantas", "mucho", "mucha",
+  "muchos", "muchas", "poco", "poca", "pocos", "pocas", "muy", "menos",
+  "mejor", "peor", "mayor", "menor", "gran", "grande", "pequeno",
+  "bien", "mal", "aqui",
+  
+  # Verbos auxiliares
+  "va", "voy", "vas", "van", "ir", "ido", "iba", "iban",
+  "he", "has", "ha", "hemos", "han", "haber", "habido",
+  "soy", "eres", "somos", "estar", "estado",
+  "tengo", "tienes", "tenemos", "tienen", "tener", "tenido",
+  "hago", "haces", "hacemos", "hacen", "hacer", "hecho",
+  "digo", "dices", "dice", "decimos", "dicen", "decir", "dicho",
+  "puedo", "puedes", "puede", "podemos", "pueden", "poder", "podido",
+  "quiero", "quieres", "quiere", "queremos", "quieren", "querer", "querido",
+  "doy", "das", "da", "damos", "dan", "dar", "dado",
+  "veo", "ves", "vemos", "ven", "visto",
+  
+  # Pronombres y artículos extra
+  "esto", "esos", "esas", "aquel", "aquella", "aquellos", "aquellas",
+  "mio", "mia", "mios", "mias", "tuyo", "tuya", "tuyos", "tuyas",
+  "suyo", "suya", "suyos", "suyas",
+  
+  # Conectores / preposiciones
+  "sobre", "bajo", "entre", "desde", "hasta", "hacia", "mediante",
+  "durante", "contra", "segun", "tras", "excepto", "salvo",
+  
+  # Saludos / ruido emocional
+  "gracias", "excelente", "buena", "bueno", "saludos", "hola", "jajaja",
+  "ojala", "porfa", "porfavor", "favor", "saludo", "abrazo", "adelante", "siga",
+  "dije", "digan",
+  
+  # Ruido general español
+  "estan", "están", "aun", "aún", "ademas", "además",
+  "toda", "etc", "vez", "veces", "año", "años", "ano", "anos",
+  "creo", "parece", "alguien", "deja", "encanta", "puede", "sabe",
+  "parte", "tema", "temas", "hoy", "dia", "día", "tiempo", "momento",
+  "cosa", "cosas", "igual", "forma", "unica", "única", "cualquier",
+  "primer", "primera", "segundo", "tercero",
+  
+  # Noise / typos
+  "fnxlzcu", "hww", "ooooila",
+  
+  # Proper nouns irrelevantes
+  "abigail", "agus", "sra", "señora", "senora", "lucas", "lima",
+  "peru", "dea", "proape",
+  
+  # Ruido en inglés / alemán
+  "weiter", "einem", "mann",
+  
+  # Expresiones multi-palabra (las filtrarás en bigrams)
+  "anos atrás", "abigail gracias", "abigail dios", "gracias abigail",
+  "estan haciendo", "encanta escuchar", "sra abigail", "tres semanas",
+  "temas abordas", "mpios lucas", "dos veces", "excelente analisis",
+  "seria interesante", "buen programa", "siga adelante",
+  "senora gracias", "excelente presentación", "excelente entrevista",
+  "algun dia", "algun momento", "cualquier cosa",
+  "hoy dia", "dio cuenta", "excelente analisis", "sigue adelante",
+  "fuerte abrazo", "abrir flor", "doiorg", "doi org",
+  "excelente exposición", "ningun momento", "tiempo igual",
+  "dios hara", "dios hará", "unica forma", "estan quitando",
+  "llevan anos", "dedo patética", "dolor oseo", "bache intente",
+  "demos lugar",
+  
+  "hizo", "hace", "pasa", "paso", "ser", "seria", "todo", "todas",
+  "claro", "debe", "deberia", "hablar", "hablo", "habla", "dije", "digo",
+  "pregunta", "razon",
+  
+  
+  
+  "falta", "falta de", "pena", "vergüenza",
+  "tema", "temas", 
+  "totalmente", "claro", "pasa", "haciendolo", "haciendo",
+  "ejemplo",
+  "apoyo", "debe", "debería", "deberia",
+  "sos", "sos un", "sos una",
+  "quedo", "hizo", "trabajo",
+  "plena", "parte", 
+  "hizo", "habla", "hablar", "dijo", "dice", "digamos", "habia","tipo", "manera", "tenes", "mira",
+  "dos", "recien","lado", "fijate", "tenia","llama", "nueva", "dos", "incluso", "traves", 
+  "sino", "nacio", "partir", "ningun", "dentro", "lugar", "dio", "miren", "decia", "algun", "viene",
+  "alguna", "nadie", "medio", "casa", "respecto", "importante", 
+  "quisieras_colaborar", "maria_julia", "efectivamente", "supuesto", "ayer",
+  "hacerlo_uniendote", "importantes_librerias", "pudieras_colaborar", "campanita_musica",
+  "patreon_siguiendo", "hijos", "sabes", "cuenta", 
+  "patreon_siguiendo", "hacerlo_uniendote", "comentario_suscribiendote", "sabes", "buenos_dias",
+  "juan_pablo", "habian_encontrado", "titulado_generacion", "boton_unirse", "importantes_librerias", 
+  "musica_bienvenidos", "maria_julia", "maria", "julia", "patreon", "siguiendo", "hacerlo", "uniendote",
+  "suscribiendote", "punto", "buenos_dias", "buenos", "dias", "podes_encontrarlo", 
+  "podes", "encontrarlo", "etcetera_etcetera", "etcetera", "reciente_libro", "reciente", "libro",
+  "importantes", "librerias", "libreria", "donaciones_libres", "donaciones", "libres", "encuentra", "disponible",
+  "encuentra_disponible", "quisieras", "marcela", "pagano", "pablo", "anduesa", "barbara", "dirroco", "poner",
+  "demas", "monton", "pudieras", "habian", "boton", "unirse", "musica", "campanita",
+  
+  # Diminutivos comunes
+  "poquito", "poquita", "poquitos", "poquitas",
+  "muchito", "muchita", "muchitos", "muchitas",
+  "ratito", "ratitos", "ratita", "ratitas",
+  "momentito", "momentitos",
+  "ahorita", "ahoritita",
+  "cosita", "cositas",
+  "amiguito", "amiguita", "amiguitos", "amiguitas",
+  "chiquito", "chiquita", "chiquitos", "chiquitas",
+  "niñito", "niñita", "niñitos", "niñitas",
+  "pueblito", "pueblitos",
+  "casita", "casitas",
+  "perrito", "perrita", "perritos", "perritas",
+  "gatito", "gatita", "gatitos", "gatitas",
+  "abuelito", "abuelita", "abuelitos", "abuelitas",
+  "papito", "mamita",
+  "hermanito", "hermanita", "hermanitos", "hermanitas",
+  "noviecita", "noviecitos",
+  "besito", "besitos",
+  "cafecito", "cafecitos",
+  "tiempito", "tiempitos",
+  "boludito", "boluditos",
+  
+  # Expresiones argentinas coloquiales
+  "che", "boludo", "boluda", "boludeces",
+  "quilombo", "quilombito",
+  "laburo", "laburito",
+  "bondi", "colectivo",
+  "mina", "minita",
+  "pibe", "piba", "pibito", "pibita",
+  "chabón", "chabona",
+  "guita", "manguito", "mangos",
+  "fiaca", "fiacón",
+  "morfi", "morfar",
+  "birra", "birrita",
+  "matecito", "mate",
+  "asado", "asadito",
+  "locura", "locurita",
+  "piola", "repiola",
+  "copado", "copadito",
+  "trucho", "truchito",
+  "macana", "macanita",
+  "cacho", "cachito",
+  "bondiola", "choripán",
+  "quilombazo", "quilombito",
+  "re", "recontra", "altísimo", "altísima",
+  "posta", "altísimamente",
+  "bancá", "aguante", "aguantá",
+  "dale", "andá", "vení",
+  "uh", "epa", "ojo", "pucha"
+  
+)
+
+# Tokenizar
+tokens <- echterText %>%
+  unnest_tokens(word, texto) %>%
+  filter(!word %in% stopwords_es) %>%
+  filter(!word %in% ruidos) %>%
+  filter(!grepl("isimo$|isima$|isimos$|isimas$", word)) %>%
+  filter(nchar(word) >= 3) %>%
+  select(doc_id, word)
+
+# Contar frecuencias
+frecuencias <- tokens %>%
+  count(word, sort = TRUE)
+
+# Seleccionar top 20
+top20 <- head(frecuencias, 20)
+print(top20)
+
+# Gráfico de barras - Comentarios de oposición
+op_com_br <- ggplot(top20, aes(x = reorder(word, n), y = n)) +
+  geom_col(fill = "#3B82F6", width = 0.7) +
+  coord_flip() +
+  labs(
+    title = "Top 20 términos más frecuentes\nComentarios de oposición",
+    x = "Término",
+    y = "Frecuencia",
+    caption = "Elaboración propia (Tupamaros) con datos de YouTube"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold", size = 16, hjust = 0.5),
+    axis.title.y = element_text(margin = margin(r = 10)),
+    axis.title.x = element_text(margin = margin(t = 10)),
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor = element_blank(),
+    plot.caption = element_text(size = 10, hjust = 1, color = "gray40"),
+    axis.text = element_text(color = "gray20")
+  )
+
+# BIGRAMAS MEJORADOS
+# Crear bigramas
+bigrams <- echterText %>%
+  unnest_tokens(bigram, texto, token = "ngrams", n = 2)
+
+# Separar en dos columnas
+bigrams_sep <- bigrams %>%
+  separate(bigram, c("word1", "word2"), sep = " ")
+
+# Filtrar con criterios más estrictos
+bigrams_filt <- bigrams_sep %>%
+  filter(!word1 %in% stopwords_es,
+         !word2 %in% stopwords_es,
+         !word1 %in% ruidos,
+         !word2 %in% ruidos,
+         nchar(word1) >= 3,  # Palabras de al menos 3 caracteres
+         nchar(word2) >= 3,
+         !is.na(word1), 
+         !is.na(word2))
+
+bigram_counts <- bigrams_filt %>%
+  count(word1, word2, sort = TRUE) %>%
+  filter(n >= 3)  # Solo bigramas que aparezcan al menos 3 veces
+
+# Ver los top bigramas
+print(head(bigram_counts, 30))
+
+# Obtener términos del top 20 para el grafo
+top20_terms <- tokens %>%
+  count(word, sort = TRUE) %>%
+  slice_head(n = 20) %>%
+  pull(word)
+
+# Filtrar bigramas donde al menos una palabra esté en el top 20
+bigram_top20 <- bigram_counts %>%
+  filter(word1 %in% top20_terms | word2 %in% top20_terms) %>%
+  filter(n >= 3)  # Mínimo 3 apariciones
+
+# Visualización de red de bigramas mejorada
+graph <- graph_from_data_frame(bigram_top20)
+
+# Red de bigramas - Comentarios de oposición
+set.seed(123)
+op_com_gr <- ggraph(graph, layout = "fr") +
+  geom_edge_link(aes(edge_alpha = n, edge_width = n), 
+                 edge_colour = "gray70",
+                 show.legend = FALSE) +
+  geom_node_point(color = "#3B82F6", size = 5) +
+  geom_node_text(aes(label = name), vjust = 1.5, hjust = 0.5, size = 3.5) +
+  theme_void() +
+  labs(
+    title = "Red de bigramas - Términos más frecuentes\nComentarios de oposición",
+    caption = "Elaboración propia (Tupamaros) con datos de YouTube"
+  ) +
+  theme(
+    plot.title = element_text(face = "bold", size = 16, hjust = 0.5),
+    plot.caption = element_text(size = 10, hjust = 1, color = "gray40")
+  )
+
+# Convert bigrams into single-token strings with "_"
+bigrams_unidos <- bigrams_filt %>%
+  mutate(bigram_token = paste(word1, word2, sep = "_")) %>%
+  count(bigram_token, sort = TRUE)
+
+# View top bigram tokens
+head(bigrams_unidos, 30)
+
+
+# Add bigrams as "_"-joined tokens to the existing tokens object
+tokens <- tokens %>%
+  bind_rows(
+    bigrams_filt %>% 
+      transmute(word = paste(word1, word2, sep = "_"))
+  )
+
+
+# Contar frecuencias nuevamente
+frecuencias <- tokens %>%
+  count(word, sort = TRUE)
+
+# Seleccionar top 20 nuevamente
+top20 <- head(frecuencias, 20)
+print(top20)
+
+# ---------------- Topic models ----------------
+
+# Crear documento-término matriz (DTM) desde los tokens limpios
+dtm_data <- tokens %>%
+  count(doc_id, word) %>%
+  cast_dtm(doc_id, word, n)
+
+# Eliminar documentos vacíos
+row_sums <- slam::row_sums(dtm_data)
+cat("Documentos vacíos iniciales:", sum(row_sums == 0), "\n")
+dtm_data <- dtm_data[row_sums > 0, ]
+
+dtm_filtered <- removeSparseTerms(dtm_data, 0.999)  
+cat("Dimensiones después de filtrar:", dim(dtm_filtered), "\n")
+
+# Eliminar documentos vacíos después del filtrado
+row_sums_after <- slam::row_sums(dtm_filtered)
+cat("Documentos vacíos después:", sum(row_sums_after == 0), "\n")
+dtm_filtered <- dtm_filtered[row_sums_after > 0, ]
+
+# Verificar que tenemos suficientes datos
+if(nrow(dtm_filtered) < 10) {
+  stop("Muy pocos documentos. Necesitas al menos 10 comentarios con contenido válido.")
+}
+
+if(ncol(dtm_filtered) < 10) {
+  stop("Muy pocos términos únicos. Revisa tu lista de palabras de ruido.")
+}
+
+# Probar distintos valores de k
+k_values <- 2:5
+perplejidades <- c()
+
+for (k in k_values) {
+  set.seed(1234)
+  modelo_temp <- LDA(
+    dtm_filtered,
+    k = k,
+    method = "Gibbs",
+    control = list(
+      seed = 1234,
+      burnin = 300,
+      iter = 700,
+      thin = 50
+    )
+  )
+  
+  loglik <- logLik(modelo_temp)
+  perplejidad <- exp(-loglik / sum(dtm_filtered))
+  perplejidades <- c(perplejidades, perplejidad)
+}
+
+df_perp <- data.frame(k = k_values, perplejidad = perplejidades)
+
+# Seleccionar k mínimo
+k_optimo <- df_perp$k[which.min(df_perp$perplejidad)]
+
+# Reemplazar el valor final de k por el óptimo
+k_topics <- k_optimo
+
+cat("\nUsando k =", k_topics, "tópicos\n")
+
+# Fijar semilla global
+set.seed(1234)
+
+# Configuración del modelo
+lda_model <- LDA(
+  dtm_filtered,
+  k = k_topics,
+  method = "Gibbs",
+  control = list(
+    seed = 1234,
+    burnin = 500,      
+    iter = 1000,       
+    thin = 50,         
+    best = TRUE,       
+    verbose = 50       
+  )
+)
+
+
+# ---------------- Extraer y analizar tópicos ----------------
+
+# Extraer términos por tópico (beta)
+terms_per_topic <- terms(lda_model, 10)  #top 10 por tópico
+
+# Mostrar términos por tópico
+for(i in 1:k_topics) {
+  cat("\nTÓPICO", i, ":\n")
+  cat(paste(terms_per_topic[, i], collapse = ", "), "\n")
+}
+
+# Crear vector vacío
+topic_labels <- rep(NA, k_topics)
+
+# Nombres de los tópicos
+topic_labels[1] <- "Democracia argentina"
+topic_labels[2] <- "Programa de historia"
+topic_labels[3] <- "Peronismo"
+topic_labels[4] <- "Feminismo"
+topic_labels[5] <- "Discurso mediático"
+
+topic_names <- data.frame(
+  topic = 1:k_topics,
+  nombre_topico = topic_labels
+)
+
+# Extraer matriz beta (probabilidades término-tópico)
+beta_matrix <- posterior(lda_model)$terms
+
+# Convertir a formato tidy manualmente
+topics_beta <- data.frame()
+for(i in 1:k_topics) {
+  topic_data <- data.frame(
+    topic = i,
+    term = colnames(beta_matrix),
+    beta = beta_matrix[i, ]
+  )
+  topics_beta <- rbind(topics_beta, topic_data)
+}
+
+# Agregar nombre del tópico
+topics_beta <- topics_beta %>%
+  left_join(topic_names, by = "topic") %>%
+  arrange(topic, desc(beta))
+
+# Top 10 términos por tópico
+top_terms <- topics_beta %>%
+  group_by(topic, nombre_topico) %>%
+  slice_max(beta, n = 10) %>%
+  ungroup() %>%
+  arrange(topic, desc(beta))
+
+# Mostrar resultados detallados
+for(i in 1:k_topics) {
+  cat("\n=== Tópico:", topic_labels[i], "(con probabilidades) ===\n")
+  topic_terms <- top_terms %>%
+    filter(topic == i) %>%
+    select(term, beta)
+  print(topic_terms, n = 10)
+}
+
+# Definir paleta de colores personalizada por tópico
+colores_topicos <- c(
+  "Feminismo" = "#9B59B6",                 # morado
+  "Discurso mediático" = "#F1C40F",        # amarillo
+  "Democracia argentina" = "#E67E22", # naranja
+  "Programa de historia" = "#E74C3C",           
+  "Peronismo" = "#3498DB"  
+)
+
+# Visualización de términos por tópico
+op_com_tp <- top_terms %>%
+  mutate(term = reorder_within(term, beta, nombre_topico)) %>%
+  ggplot(aes(beta, term, fill = nombre_topico)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ nombre_topico, scales = "free") +
+  scale_y_reordered() +
+  scale_fill_manual(values = colores_topicos) +
+  labs(
+    title = paste("Top 10 términos por tópico (k =", k_topics,")"),
+    x = "Beta (probabilidad del término en el tópico)",
+    y = NULL,
+    caption = "Elaboración propia (Tupamaros) con datos de YouTube"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold", size = 16, hjust = 0.5),
+    axis.text = element_text(size = 5, color = "gray20"),
+    plot.caption = element_text(size = 10, hjust = 1, color = "gray40")
+  )
+
+# Análisis de comentarios por tópico
+
+# Extraer gamma (probabilidades documento-tópico)
+gamma_matrix <- posterior(lda_model)$topics
+
+# Convertir a formato tidy manualmente
+docs_gamma <- gamma_matrix %>%
+  as.data.frame() %>%
+  rownames_to_column("document") %>%
+  pivot_longer(
+    cols = -document,
+    names_to = "topic",
+    values_to = "gamma"
+  ) %>%
+  mutate(topic = as.numeric(topic))
+
+# Asignar cada comentario al tópico dominante
+docs_topico_principal <- docs_gamma %>%
+  group_by(document) %>%
+  slice_max(gamma, n = 1) %>%
+  ungroup() %>%
+  mutate(document = as.numeric(document))
+
+# Obtener los IDs de documentos que quedaron en dtm_filtered
+docs_ids_validos <- as.numeric(rownames(dtm_filtered))
+
+# Unir con datos originales
+comentarios_con_topico <- echterText %>%
+  mutate(doc_id = row_number()) %>%
+  filter(doc_id %in% docs_ids_validos) %>%
+  left_join(docs_topico_principal, by = c("doc_id" = "document")) %>%
+  left_join(topic_names, by = "topic")
+
+# Ver distribución de comentarios por tópico
+tabla_distribucion <- comentarios_con_topico %>%
+  count(topic, sort = TRUE) %>%
+  left_join(topic_names, by = "topic")
+
+print(tabla_distribucion)
+
+# Gráfico: número de comentarios por tópico (distribución)
+op_com_k <- ggplot(tabla_distribucion, aes(x = nombre_topico, y = n, fill = nombre_topico)) +
+  geom_col(show.legend = FALSE, width = 0.7) +
+  scale_fill_manual(values = colores_topicos) +
+  labs(
+    title = paste("Número de comentarios por tópico (k =", k_topics,")"),
+    x = "Tópico",
+    y = "Número de comentarios",
+    caption = "Elaboración propia (Tupamaros) con datos de YouTube"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold", size = 16, hjust = 0.5),
+    axis.title.x = element_text(margin = margin(t = 10)),
+    axis.title.y = element_text(margin = margin(r = 10)),
+    axis.text.x = element_text(angle = 20, hjust = 1, color = "gray20"),
+    axis.text.y = element_text(color = "gray20"),
+    plot.caption = element_text(size = 10, hjust = 1, color = "gray40"),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor = element_blank()
+  )
+```
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.width=7, fig.height=5, out.width="90%"}
+print(op_com_br)
+```
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.width=7, fig.height=5, out.width="90%"}
+print(op_com_gr)
+```
+
+
+## 1. Selección de k óptimo
+
+- Construcción de la DTM y filtrado de documentos vacíos.
+- Evaluación de perplejidad para k = 2 a 5.
+- k óptimo seleccionado: `r k_optimo`.
+
+
+## 2. Análisis comentarios por tópico
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.width=7, fig.height=5, out.width="90%"}
+print(op_com_tp)
+```
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.width=7, fig.height=5, out.width="90%"}
+print(op_com_k)
+```
+
+
+## 3. Tópicos
+
+En base a los términos más presentativos se les asignó manualmente un nombre a cada tópico: 
+
+- Democracia argentina: Referencias a la situación democrática.
+- Programa de historia: Menciones hacia la temática de los programas como "hisotira", "escuchar", "noticia.
+- Peronismo: Concepto político dominante en el tópico.
+- Feminismo: Enfocado en conceptos como "feminismo" y "mujeres".
+- Discurso mediático: Conceptos como "análisis", "entrevista", "periodistas" sugieren la temática del tópico.
+
+
+## 4. Interpretación 
+
+
+```{r, echo=FALSE, out.width="80%"}
+knitr::include_graphics("cuatro.png")
+```
+
+
+## 5. Hallazgos clave
+
+  1. Resistencia y Posicionamiento Claro: La audiencia opositora reproduce narrativas de resistencia y apoyo a marcos pro-derechos. Los términos como "amo", "fuerza", "lucha", "maravillosa" indican una validación emocional de los marcos de derechos y la militancia.
+  
+  2. Alineación Pro-Derechos: El tópico "Feminismo" está presente en los comentarios opositores con términos asociados positivamente (feminista, mujeres), contrastando con la carga negativa y el enfoque de "crítica" observado en el corpus libertario.
+  
+  3. Uso de Contramarcadores Ideológicos: Al igual que el campo libertario utiliza marcadores como zurdo y kuka, la audiencia opositora utiliza intensamente "facho", "gorilas" y "derecha", lo que indica una confrontación ideológica mutua en los términos de la "batalla cultural".
+  
+
+
+# **Términos polarizantes**
+
+
+La sección presenta un análisis de la frecuencia de los términos más polarizantes y cargados ideológicamente que circulan en los comentarios de YouTube, utilizados como marcadores de antagonismo y pertenencia en la llamada "batalla cultural". Este análisis se basa en tres visualizaciones que agrupan los términos más frecuentes asociados a género, ultraderecha e izquierda, aunque los términos se superponen frecuentemente en la práctica.
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE, include=FALSE}
+library(tidyverse)
+library(tidytext)
+library(SnowballC)
+library(udpipe)
+library(readxl)
+library(tm)
+library(stringr)
+library(dplyr)
+
+# Cargar datos
+comentarios_videos_gelatina <- read_excel("Datos/Comentarios/comentarios_youtube_gelatina_decena.xlsx")
+comentarios_videos_cenital <- read_excel("Datos/Comentarios/comentarios_youtube_cenitalgrande_decena.xlsx")
+comentarios_youtube_futurorockfm <- read_excel("Datos/Comentarios/comentarios_youtube_futurorockanrolleros_decena.xlsx")
+comentarios_videos_laje <- read_excel("Datos/Comentarios/comentarios_videos_laje_decena.xlsx")
+comentarios_videos_peluca <- read_excel("Datos/Comentarios/comentarios_videos_peluca_decena.xlsx")
+comentarios_videos_danann <- read_excel("Datos/Comentarios/comentarios_videos_danann_decena.xlsx")
+
+comentarios_todos <- bind_rows(
+  comentarios_videos_gelatina,
+  comentarios_videos_cenital,
+  comentarios_youtube_futurorockfm,
+  comentarios_videos_laje,
+  comentarios_videos_peluca,
+  comentarios_videos_danann
+)
+
+# Verificar nombres de columnas
+names(comentarios_todos)
+
+
+# Usar la columna textOriginal
+echterText <- comentarios_todos %>%
+  mutate(texto = as.character(texto))
+
+# Limpieza: acentos, minúsculas, puntuación y emojis
+echterText <- echterText %>%
+  mutate(
+    texto = str_replace_all(
+      texto, c( 
+        "á" = "a",
+        "é" = "e",
+        "í" = "i",
+        "ó" = "o",
+        "ú" = "u",
+        "Á" = "A",
+        "É" = "E",
+        "Í" = "I",
+        "Ó" = "O",
+        "Ú" = "U",
+        "ü" = "u",
+        "Ü" = "U",
+        "ñ" = "n",
+        "Ñ" = "N"
+      ))) 
+
+# Ahora eliminamos los signos de puntuación 
+echterText <- echterText %>%  
+  mutate(
+    texto = str_to_lower(texto), 
+    texto = str_replace_all(texto, "[[:punct:]]", " "), 
+    texto = str_squish(texto)
+  )
+
+# Eliminamos números que puedan generar ruido en nuestro análisis
+echterText <- echterText %>%
+  mutate(
+    texto = str_replace_all(texto, "[0-9]+", " "),
+    texto = str_squish(texto)
+  )
+
+# Eliminamos urls que sean molestas para el análisis
+echterText <- echterText %>%
+  mutate(
+    texto = str_replace_all(texto, "https?://\\S+|www\\.\\S+", " "),
+    texto = str_squish(texto)
+  )
+
+# Eliminamos terminología ligada a sitios web o enlaces de internet
+echterText <- echterText %>%
+  mutate(
+    texto = str_remove_all(texto, "\\b(www|http|https|watch|youtube|xqedg|quot|href|com|amp|t|br|nrqw)\\b"),
+    texto = str_squish(texto)
+  )
+
+# Eliminamos emojis
+echterText <- echterText %>%
+  mutate(
+    texto = str_replace_all(texto, "[\\p{So}\\p{Cn}]", " "),
+    texto = str_squish(texto)
+  )
+
+echterText <- echterText %>%
+  mutate(doc_id = row_number())
+
+
+# Verificar poniendo los top 10 
+head(echterText$texto, 10)
+
+# Stopwords en español
+stopwords_es <- stopwords("spanish")
+
+
+# Ahora agrupamos términos
+
+ruidos <- c(
+  # Nombres propios comunes en los comentarios
+  "jaja", "xd", "like", "video", "canal", "suscribete",
+  "laje", "agustin", "ofelia", "fernandez", "milei", "javier",
+  "julia", "Rosemberg", "gustavo", "cordera", "pedro", "rosemblat",
+  "kirchner", "cristina", "nestor", "ari", "lijalad", "juan", "manuel",
+  "karina", "miley", "ramos", "mejia", "mirta", "legran", "santos", "vargas",
+  "santiago", "caputo", "jose", "luis", "taylor", "swift", "patricia", "burrich",
+  "gelatina",
+  
+  
+  
+  # Palabras comunes sin contenido relevante
+  "hace", "cada", "yo", "los", "sin", "q", "era", "todos", "algo",
+  "esta", "esa", "todo", "porque", "tu", "ese", "tiene", "son", "las",
+  "o", "si", "mas", "solo", "v", "b", "asi", "tan", "siento", "como",
+  "del", "mi", "su", "sus", "una", "para", "pero", "es", "ser", "ver", "que",
+  "de", "a", "el", "la", "y", "en", "no", "me", "lo", "un", "se",
+  "por", "con", "le", "al", "cuando", "te", "eso", "este", "ya",
+  "donde", "cual", "quien", "fue", "sido", "estoy", "estas",
+  "hay", "aca", "alla", "ahi", "entonces", "pues", "ahora", "despues",
+  "antes", "luego", "siempre", "nunca", "tambien", "ni", "tus", "nuestro",
+  "nuestros", "nuestra", "nuestras", "vos", "usted", "ustedes", "ellos", "ellas",
+  "otro", "otros", "otra", "otras", "mismo", "misma", "mismos", "mismas",
+  "tal", "tales", "tanto", "tanta", "tantos", "tantas", "mucho", "mucha",
+  "muchos", "muchas", "poco", "poca", "pocos", "pocas", "muy", "menos",
+  "mejor", "peor", "mayor", "menor", "gran", "grande", "pequeno",
+  "bien", "mal", "aqui",
+  
+  # Verbos auxiliares
+  "va", "voy", "vas", "van", "ir", "ido", "iba", "iban",
+  "he", "has", "ha", "hemos", "han", "haber", "habido",
+  "soy", "eres", "somos", "estar", "estado",
+  "tengo", "tienes", "tenemos", "tienen", "tener", "tenido",
+  "hago", "haces", "hacemos", "hacen", "hacer", "hecho",
+  "digo", "dices", "dice", "decimos", "dicen", "decir", "dicho",
+  "puedo", "puedes", "puede", "podemos", "pueden", "poder", "podido",
+  "quiero", "quieres", "quiere", "queremos", "quieren", "querer", "querido",
+  "doy", "das", "da", "damos", "dan", "dar", "dado",
+  "veo", "ves", "vemos", "ven", "visto",
+  
+  # Pronombres y artículos extra
+  "esto", "esos", "esas", "aquel", "aquella", "aquellos", "aquellas",
+  "mio", "mia", "mios", "mias", "tuyo", "tuya", "tuyos", "tuyas",
+  "suyo", "suya", "suyos", "suyas",
+  
+  # Conectores / preposiciones
+  "sobre", "bajo", "entre", "desde", "hasta", "hacia", "mediante",
+  "durante", "contra", "segun", "tras", "excepto", "salvo",
+  
+  # Saludos / ruido emocional
+  "gracias", "excelente", "buena", "bueno", "saludos", "hola", "jajaja",
+  "ojala", "porfa", "porfavor", "favor", "saludo", "abrazo", "adelante", "siga",
+  "dije", "digan",
+  
+  # Ruido general español
+  "estan", "están", "aun", "aún", "ademas", "además",
+  "toda", "etc", "vez", "veces", "año", "años", "ano", "anos",
+  "creo", "parece", "alguien", "deja", "encanta", "puede", "sabe",
+  "parte", "tema", "temas", "hoy", "dia", "día", "tiempo", "momento",
+  "cosa", "cosas", "igual", "forma", "unica", "única", "cualquier",
+  "primer", "primera", "segundo", "tercero",
+  
+  # Noise / typos
+  "fnxlzcu", "hww", "ooooila",
+  
+  # Proper nouns irrelevantes
+  "abigail", "agus", "sra", "señora", "senora", "lucas", "lima",
+  "peru", "dea", "proape",
+  
+  # Ruido en inglés / alemán
+  "weiter", "einem", "mann",
+  
+  # Expresiones multi-palabra (las filtrarás en bigrams)
+  "anos atrás", "abigail gracias", "abigail dios", "gracias abigail",
+  "estan haciendo", "encanta escuchar", "sra abigail", "tres semanas",
+  "temas abordas", "mpios lucas", "dos veces", "excelente analisis",
+  "seria interesante", "buen programa", "siga adelante",
+  "senora gracias", "excelente presentación", "excelente entrevista",
+  "algun dia", "algun momento", "cualquier cosa",
+  "hoy dia", "dio cuenta", "excelente analisis", "sigue adelante",
+  "fuerte abrazo", "abrir flor", "doiorg", "doi org",
+  "excelente exposición", "ningun momento", "tiempo igual",
+  "dios hara", "dios hará", "unica forma", "estan quitando",
+  "llevan anos", "dedo patética", "dolor oseo", "bache intente",
+  "demos lugar",
+  
+  "hizo", "hace", "pasa", "paso", "ser", "seria", "todo", "todas",
+  "claro", "debe", "deberia", "hablar", "hablo", "habla", "dije", "digo",
+  "pregunta", "razon",
+  
+  
+  
+  "falta", "falta de", "pena", "vergüenza",
+  "tema", "temas", 
+  "totalmente", "claro", "pasa", "haciendolo", "haciendo",
+  "ejemplo",
+  "apoyo", "debe", "debería", "deberia",
+  "sos", "sos un", "sos una",
+  "quedo", "hizo", "trabajo",
+  "plena", "parte", 
+  "hizo", "habla", "hablar", "dijo", "dice", "digamos", "habia","tipo", "manera", "tenes", "mira",
+  "dos", "recien","lado", "fijate", "tenia","llama", "nueva", "dos", "incluso", "traves", 
+  "sino", "nacio", "partir", "ningun", "dentro", "lugar", "dio", "miren", "decia", "algun", "viene",
+  "alguna", "nadie", "medio", "casa", "respecto", "importante", 
+  "quisieras_colaborar", "maria_julia", "efectivamente", "supuesto", "ayer",
+  "hacerlo_uniendote", "importantes_librerias", "pudieras_colaborar", "campanita_musica",
+  "patreon_siguiendo", "hijos", "sabes", "cuenta", 
+  "patreon_siguiendo", "hacerlo_uniendote", "comentario_suscribiendote", "sabes", "buenos_dias",
+  "juan_pablo", "habian_encontrado", "titulado_generacion", "boton_unirse", "importantes_librerias", 
+  "musica_bienvenidos", "maria_julia", "maria", "julia", "patreon", "siguiendo", "hacerlo", "uniendote",
+  "suscribiendote", "punto", "buenos_dias", "buenos", "dias", "podes_encontrarlo", 
+  "podes", "encontrarlo", "etcetera_etcetera", "etcetera", "reciente_libro", "reciente", "libro",
+  "importantes", "librerias", "libreria", "donaciones_libres", "donaciones", "libres", "encuentra", "disponible",
+  "encuentra_disponible", "quisieras", "marcela", "pagano", "pablo", "anduesa", "barbara", "dirroco", "poner",
+  "demas", "monton", "pudieras", "habian", "boton", "unirse", "musica", "campanita",
+  
+  # Diminutivos comunes
+  "poquito", "poquita", "poquitos", "poquitas",
+  "muchito", "muchita", "muchitos", "muchitas",
+  "ratito", "ratitos", "ratita", "ratitas",
+  "momentito", "momentitos",
+  "ahorita", "ahoritita",
+  "cosita", "cositas",
+  "amiguito", "amiguita", "amiguitos", "amiguitas",
+  "chiquito", "chiquita", "chiquitos", "chiquitas",
+  "niñito", "niñita", "niñitos", "niñitas",
+  "pueblito", "pueblitos",
+  "casita", "casitas",
+  "perrito", "perrita", "perritos", "perritas",
+  "gatito", "gatita", "gatitos", "gatitas",
+  "abuelito", "abuelita", "abuelitos", "abuelitas",
+  "papito", "mamita",
+  "hermanito", "hermanita", "hermanitos", "hermanitas",
+  "noviecita", "noviecitos",
+  "besito", "besitos",
+  "cafecito", "cafecitos",
+  "tiempito", "tiempitos",
+  "boludito", "boluditos",
+  
+  # Expresiones argentinas coloquiales
+  "che", "boludo", "boluda", "boludeces",
+  "quilombo", "quilombito",
+  "laburo", "laburito",
+  "bondi", "colectivo",
+  "mina", "minita",
+  "pibe", "piba", "pibito", "pibita",
+  "chabón", "chabona",
+  "guita", "manguito", "mangos",
+  "fiaca", "fiacón",
+  "morfi", "morfar",
+  "birra", "birrita",
+  "matecito", "mate",
+  "asado", "asadito",
+  "locura", "locurita",
+  "piola", "repiola",
+  "copado", "copadito",
+  "trucho", "truchito",
+  "macana", "macanita",
+  "cacho", "cachito",
+  "bondiola", "choripán",
+  "quilombazo", "quilombito",
+  "re", "recontra", "altísimo", "altísima",
+  "posta", "altísimamente",
+  "bancá", "aguante", "aguantá",
+  "dale", "andá", "vení",
+  "uh", "epa", "ojo", "pucha"
+  
+)
+
+diccionario_insultos_espectropolitico <- c(
+  # Izquierda
+  "izquierda" = "izquierda",
+  "zurdo" = "izquierda", "zurdos" = "izquierda", "zurda" = "izquierda", "zurdas" = "izquierda",
+  "comunista" = "izquierda", "comunistas" = "izquierda",
+  "socialista" = "izquierda", "socialistas" = "izquierda",
+  "progre" = "izquierda", "progres" = "izquierda",
+  "progresista" = "izquierda", "progresistas" = "izquierda",
+  "globalista" = "izquierda", "globalistas" = "izquierda",
+  "woke" = "izquierda", "wokes" = "izquierda",
+  "peronista" = "izquierda", "peronistas" = "izquierda",
+  "planero" = "izquierda", "planeros" = "izquierda",
+  "planera" = "izquierda", "planeras" = "izquierda",
+  "choriplanero" = "izquierda", "choriplaneros" = "izquierda",
+  "choriplanera" = "izquierda", "choriplaneras" = "izquierda",
+  "orco" = "izquierda", "orcos" = "izquierda",
+  "orca" = "izquierda", "orcas" = "izquierda",
+  "rojo" = "izquierda", "rojos" = "izquierda",
+  "roja" = "izquierda", "rojas" = "izquierda",
+  "kuka" = "izquierda", "kukas" = "izquierda",
+  
+  # Derecha
+  "derecha" = "derecha",
+  "facho" = "derecha", "fachos" = "derecha",
+  "fascista" = "derecha", "fascistas" = "derecha",
+  "conservador" = "derecha", "conservadores" = "derecha",
+  "libertario" = "derecha", "libertarios" = "derecha",
+  "gorila" = "derecha", "gorilas" = "derecha",
+  "patriarcado" = "derecha",
+  
+  # Género
+  "género" = "género",
+  "feminista" = "género", "feministas" = "género",
+  "trans" = "género",
+  "trava" = "género", "travesti" = "género", "trave" = "género", "travesa" = "género",
+  "machona" = "género", "marimacho" = "género",
+  "torta" = "género",
+  "puto" = "género", "maricón" = "género", "loca" = "género",
+  "no binarie" = "género", "les niñes" = "género", "les boludes" = "género",
+  "ideología de género" = "género", "moda zurda" = "género",
+  "se creen especiales" = "género", "eso no existe" = "género"
+)
+
+diccionario_insultos_espectropolitico <- tibble(
+  palabra = names(diccionario_insultos_espectropolitico),
+  categoria = unname(diccionario_insultos_espectropolitico)
+)
+
+# Tokenizar
+tokens <- echterText %>%
+  unnest_tokens(word, texto) %>%
+  filter(!word %in% stopwords_es) %>%
+  filter(!word %in% ruidos) %>%
+  filter(!grepl("isimo$|isima$|isimos$|isimas$", word)) %>%
+  filter(nchar(word) >= 3) %>%
+  select(doc_id, word)
+
+# Gráficos 
+
+tokens_categorizados <- tokens %>%
+  left_join(diccionario_insultos_espectropolitico, by = c("word" = "palabra"))
+
+tokens_categorizados %>%
+  filter(!is.na(categoria)) %>%
+  count(categoria, word, sort = TRUE)
+
+
+# Contar frecuencias
+frecuencias <- tokens_categorizados %>%
+  count(word, sort = TRUE)
+
+# Seleccionar top 20
+top20 <- head(frecuencias, 20)
+print(top20)
+
+
+ggplot(top20, aes(x = reorder(word, n), y = n)) +
+  geom_col(fill = "darkorchid") +
+  coord_flip() +
+  labs(
+    title = "Top 20 términos más frecuentes",
+    x = "Término",
+    y = "Frecuencia"
+  )
+
+# Frecuencia de términos por categoría
+g1 <- tokens_categorizados %>%
+  filter(categoria == "género") %>%
+  count(word, sort = TRUE) %>%
+  slice_max(n, n = 20) %>%
+  ggplot(aes(x = reorder(word, n), y = n)) +
+  geom_col(fill = "darkorchid") +
+  coord_flip() +
+  labs(title = "Términos asociados a género", x = "Palabra", y = "Frecuencia",
+      caption = "Elaboración propia (Tupamaros) con datos de YouTube")  +
+    theme_minimal(base_size = 13) +
+    theme(
+      plot.title = element_text(face = "bold", size = 16, hjust = 0.5),
+      axis.text = element_text(color = "gray20"),
+      plot.caption = element_text(size = 10, hjust = 1, color = "gray40"),
+      panel.grid.major.y = element_blank()
+    )
+
+g2 <- tokens_categorizados %>%
+  filter(categoria == "derecha") %>%
+  count(word, sort = TRUE) %>%
+  slice_max(n, n = 20) %>%
+  ggplot(aes(x = reorder(word, n), y = n)) +
+  geom_col(fill = "darkblue") +
+  coord_flip() +
+  labs(title = "Términos asociados a la ultraderecha", x = "Palabra", y = "Frecuencia",
+      caption = "Elaboración propia (Tupamaros) con datos de YouTube") +
+    theme_minimal(base_size = 13) +
+    theme(
+      plot.title = element_text(face = "bold", size = 16, hjust = 0.5),
+      axis.text = element_text(color = "gray20"),
+      plot.caption = element_text(size = 10, hjust = 1, color = "gray40"),
+      panel.grid.major.y = element_blank()
+    )
+
+g3 <- tokens_categorizados %>%
+  filter(categoria == "izquierda") %>%
+  count(word, sort = TRUE) %>%
+  slice_max(n, n = 20) %>%
+  ggplot(aes(x = reorder(word, n), y = n)) +
+  geom_col(fill = "darkred") +
+  coord_flip() +
+  labs(title = "Términos asociados a la izquierda", x = "Palabra", y = "Frecuencia", 
+      caption = "Elaboración propia (Tupamaros) con datos de YouTube") +
+    theme_minimal(base_size = 13) +
+    theme(
+      plot.title = element_text(face = "bold", size = 16, hjust = 0.5),
+      axis.text = element_text(color = "gray20"),
+      plot.caption = element_text(size = 10, hjust = 1, color = "gray40"),
+      panel.grid.major.y = element_blank()
+    )
+
+
+# === Cargar tus bases ===
+comentarios_videos_gelatina <- read_excel("Datos/Comentarios/comentarios_youtube_gelatina_decena.xlsx")
+comentarios_videos_cenital <- read_excel("Datos/Comentarios/comentarios_youtube_cenitalgrande_decena.xlsx")
+comentarios_youtube_futurorockfm <- read_excel("Datos/Comentarios/comentarios_youtube_futurorockanrolleros_decena.xlsx")
+
+comentarios_videos_laje <- read_excel("Datos/Comentarios/comentarios_videos_laje_decena.xlsx")
+comentarios_videos_peluca <- read_excel("Datos/Comentarios/comentarios_videos_peluca_decena.xlsx")
+comentarios_videos_danann <- read_excel("Datos/Comentarios/comentarios_videos_danann_decena.xlsx")
+
+# === Agrupar y contar ===
+primeros_3 <- bind_rows(
+  comentarios_videos_gelatina,
+  comentarios_videos_cenital,
+  comentarios_youtube_futurorockfm
+)
+
+ultimos_3 <- bind_rows(
+  comentarios_videos_laje,
+  comentarios_videos_peluca,
+  comentarios_videos_danann
+)
+
+conteo <- tibble(
+  Grupo = c("Oposición", "Libertarios"),
+  Observaciones = c(nrow(primeros_3), nrow(ultimos_3))
+)
+
+# === Gráfica con estilo Tupamaros ===
+g_tupamaros <- conteo %>%
+  ggplot(aes(x = reorder(Grupo, Observaciones), y = Observaciones)) +
+  geom_col(fill = "darkorchid") +
+  geom_text(aes(label = Observaciones),
+            vjust = -0.3, color = "black", size = 4) +
+  labs(
+    title = "Comparación de cantidad de comentarios",
+    x = "Grupo",
+    y = "Número de observaciones",
+    caption = "Elaboración propia (Tupamaros) con datos de YouTube"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold", size = 16, hjust = 0.5),
+    axis.text = element_text(color = "gray20"),
+    plot.caption = element_text(size = 10, hjust = 1, color = "gray40")
+  )
+
+```
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.width=7, fig.height=5, out.width="90%"}
+print(g1)
+```
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.width=7, fig.height=5, out.width="90%"}
+print(g2)
+```
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.width=7, fig.height=5, out.width="90%"}
+print(g3)
+```
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.width=7, fig.height=5, out.width="90%"}
+print(g_tupamaros)
+```
+
+## **Interpretación por Grupos Temáticos**
+
+
+El análisis sugiere que estos términos se distribuyen en tres campos principales de disputa:
+
+  1. Términos asociados a género (g1): Muestra las palabras más frecuentes en los comentarios relacionados con temas de género, reflejando debates y discusiones culturales alrededor del feminismo y la igualdad.
+
+  2. Términos asociados a la ultraderecha (g2): Esta categoría resalta palabras recurrentes en comentarios vinculados a ideologías de derecha y conservadoras. Incluye términos utilizados para referirse a figuras o ideas de derecha, así como aquellos utilizados por la audiencia de derecha para atacar a sus oponentes.
+  
+  3. Términos asociados a la izquierda (g3): Esta categoría presenta los términos más usados en comentarios que discuten temas de izquierda, movimientos sociales y críticas al poder establecido. Estos términos funcionan como insultos ideológicos ("zurdo", "kuka") utilizados por la audiencia libertaria, lo cual indica que los discursos de los creadores se reactivan como marcadores de pertenencia política.
+
+La alta frecuencia de términos como "facho", "gorilas", "zurdo", "loca" y "progresista" subraya la dinámica de polarización y confrontación léxica en YouTube. Estos datos respaldan la idea de que los comentarios funcionan como espacios de co-construcción donde los usuarios amplifican o radicalizan narrativas, utilizando insultos ideológicos y misóginos como marcadores de pertenencia política.
+
+
+# Contrapuntos (Implicaciones de la Disputa de Narrativas)
+
+
+La comparación de los discursos producidos y reproducidos permite generar contrapuntos directos a los principales argumentos libertarios:
+
+ 1. Argumento Libertario Principal: Anti-derechos y la "Ideología de Género"
+ 
+ Los canales libertarios definen las políticas de género como "discriminación inversa" o "ideología" y dedican         tópicos específicos a la "Ideología woke" y la "Crítica feminismo", centrándose en términos como mujeres y hombre.
+
+
+**Contrapunto Opositor:**
+
+  - Reapropiación del término: La oposición no solo critica la desfinanciación de las políticas de género y denuncia la violencia simbólica, sino que su audiencia y sus videos enmarcan el "Feminismo" como un tópico positivo, con términos asociados a la lucha y los derechos.
+  - Enfoque en Políticas Públicas: Los canales opositores abordan los temas de género desde la perspectiva de las "políticas públicas de género" y los "derechos LGBT+", defendiendo la ampliación de libertades civiles, lo que refuta el marco de que es solo una "ideología". El contrapunto desplaza el foco de la crítica ideológica a la defensa de derechos civiles concretos.
+
+
+2. Argumento Libertario Principal: Crítica al Estado y la "Casta"
+
+El discurso producido libertario se centra en "libertad" y "economía", atacando al "sistema" y al "gobierno", mientras que la audiencia utiliza marcadores políticos de polarización como "zurdo" y "kuka".
+
+
+**Contrapunto Opositor:**
+
+  - Análisis Histórico y Contextual: En lugar de aceptar el marco de "sistema" vs. "libertad," la oposición utiliza el "Peronismo" y la "Historia argentina" para ofrecer una contextualización profunda de la crisis actual. Esto sugiere que la oposición busca desmantelar la simplificación ideológica libertaria mediante la complejidad histórica y política.
+  - Impacto Social del Ajuste: La oposición enfoca sus videos en el "impacto del gobierno de Javier Milei" y las "consecuencias del ajuste nacional", moviendo el debate de la pura "libertad de mercado" a la esfera de los derechos sociales y la crisis.
+
+
+# Recomendaciones (Valor agregado)
+
+- Contrapunto 1: Desmantelamiento de la simplificación económica libertaria
+
+  Los libertarios reducen la política económica a una oposición binaria “libertad vs. Estado/casta”.
+  
+  La oposición puede disputar ese marco demostrando:
+  
+  1. Continuidad histórica:
+  El antiestatismo radical reproduce ciclos históricos de exclusión (Rosas, dictadura, 90s), algo visible en los tópicos “peronismo” y “historia argentina” de los canales opositores.
+  2. Materialidad social de las políticas públicas:
+El ataque al Banco Central y al gasto social no es una abstracción ideológica, sino una amenaza directa a derechos laborales, salud, educación y políticas de género.
+  3. Relación entre economía y desigualdad de género:
+  La oposición puede unir sus dos ejes discursivos:
+  - el impacto del ajuste económico
+  - con la afectación diferenciada hacia mujeres y diversidades.
+
+  Esto permite pasar de la lógica libertaria “menos Estado = más libertad” a una narrativa alternativa:
+  “Menos Estado = más desigualdad”.
+
+- Contrapunto 2: Exponer la radicalización emocional como estrategia
+
+  El éxito del discurso libertario no radica en la solidez argumental, sino en su capacidad de:
+  - Polarizar símbolos (Barbie, ideología, feminismo).
+  - Ofrecer identidades simplificadas (“gente de bien”, “normales”).
+  - Socializar hostilidad (zurda, progre, loca, feminazi) en los comentarios.
+
+  La oposición debería visibilizar esto abiertamente: no como “opinión equivocada”, sino como una estrategia de manipulación emocional deliberada.
+  
+  Esto es clave porque:
+  - neutraliza la autenticidad performativa de los influencers libertarios;
+  - reposiciona la violencia simbólica como una herramienta política, no como una “opinión más”;
+  - convierte al creador libertario en un actor estratégico, no en un “ciudadano indignado”.
+
+- Contrapunto 3: Fusionar género con economía para desactivar el marco “ideología woke”
+
+  Para el discurso libertario, el feminismo funciona como un blanco útil porque: desplaza el debate económico, ofrece enemigos claros, moviliza indignación moral.
+  
+  La oposición puede romper ese mecanismo si logra comunicar que: la destrucción de las políticas de género aumenta la vulnerabilidad económica y material.
+  
+  Ejemplo:
+  - el cierre del ex Ministerio de Mujeres → menos líneas de asistencia para víctimas → más costos para el sistema de salud y justicia;
+  - la eliminación de la ESI → más embarazos adolescentes → más pobreza.
+
+  Esto convierte el feminismo de un “tema cultural” a un tema económico, atacando el corazón del marco libertario.
+
+
+Por último, al terminar este análisis es importante **aclarar** que el tópico “Feminismo” opositor no implica simetría. A pesar de que en los gráficos parece que ambos campos hablan de feminismo “por igual”, la carga semántica es completamente diferente:
+
+  Libertarios → feminismo = enemigo
+  Opositores → feminismo = lucha/derechos
+
+# Conclusión
+
+La pregunta central del proyecto es: **¿Cómo se articulan los discursos libertarios y opositores en YouTube —tanto en sus videos (subtítulos) como en sus comunidades (comentarios)— y hasta qué punto estos discursos refuerzan, disputan o transforman narrativas de discriminación y, en particular, de género y derechos de las mujeres en Argentina?.**
+El análisis mediante Modelado de Tópicos (LDA) revela que los discursos en YouTube están articulados en estructuras claramente polarizadas.
+
+1. Articulación del Discurso Libertario (Refuerzo y Radicalización):
+  
+- Discurso Producido (Subtítulos): Está estructurado en dos ejes principales: la economía/antiestatismo y la crítica cultural/anti-género. Los creadores son productores sistemáticos de discursos anti-feministas y negacionistas de la violencia de género, con tópicos explícitos como "Ideología woke" y "Crítica feminismo".
+- Discurso Reproducido (Comentarios): La audiencia internaliza, reproduce y radicaliza estos marcos ideológicos. El tópico "Feminismo" es el de mayor volumen (~19,000 comentarios) y está marcado por una carga negativa y el uso de insultos ideológicos y misóginos (ej., "loca," "zurda," "progre"), lo que confirma la amplificación de narrativas de discriminación.
+  
+
+2. Articulación del Discurso Opositor (Disputa y Contranarración):
+  
+- Discurso Producido (Subtítulos): La oposición articula su crítica a través de un marco histórico-estructural (tópicos como "Peronismo," "Historia argentina") y el análisis político contemporáneo (tópico "Gobierno argentino"). Sostienen marcos pro derechos humanos, abordando la crítica a la desfinanciación de políticas de género y denunciando la violencia simbólica.
+- Discurso Reproducido (Comentarios): La audiencia opositora reproduce narrativas de resistencia y apoyo a marcos pro-derechos, validando los contenidos con términos de adhesión emocional ("amo," "fuerza," "lucha"). El tópico "Feminismo" aparece en este corpus con una asociación positiva (contrario al corpus libertario).
+    
+En resumen, los discursos libertarios refuerzan y radicalizan las narrativas de discriminación de género en los comentarios, mientras que los discursos opositores disputan esta hegemonía buscando transformar la conversación hacia la defensa de derechos y la contextualización histórica.
+
+
+**¿Quién esta ganando la "Batalla Cultural"?**
+
+Basado en los hallazgos del reporte sobre la dinámica de YouTube, el discurso libertario parece llevar la delantera en la estructuración de la "batalla cultural" en el ecosistema digital argentino. Los canales libertarios cuentan con millones más de suscriptores y logran captar en mayor medida la atención del público. Su muestra fue de más de 69 mil comentarios, frente apenas al rededor de 6 mil de los canales Futurorock FM, Cenital y GELATINA. 
+
+Aunque los canales opositores cumplen un rol crucial en el mapeo de espacios de contranarración y sostienen marcos alternativos, el discurso libertario ha logrado obtener una relevancia mediática especial, y sus marcos ideológicos demuestran una mayor capacidad de penetración y radicalización en la audiencia, como lo demuestran tres hallazgos clave:
+
+  1. Dominio Temático: El discurso libertario logró estructurar su contenido producido en torno a la "Ideología woke" y la "Crítica feminismo" como temas centrales.
+  2. Radicalización de la Audiencia: El tópico "Feminismo" es el más dominante en volumen en los comentarios libertarios (~19,000 ocurrencias), confirmando que la audiencia internaliza y prioriza los marcos machistas o anti-derechos impulsados por los creadores.
+  3. Hegemonía Léxica: La alta frecuencia de términos polarizantes y despectivos en los comentarios, como "facho" (174), "gorilas" (157), y el término misógino "loca" (102), subraya la dinámica de confrontación léxica intensa y la activación de marcadores de pertenencia que amplifican las narrativas de los creadores.
+En este sentido, el discurso libertario no solo produce el contenido, sino que también impulsa la polarización léxica y emocional en los espacios de co-construcción (comentarios), convirtiendo la plataforma en un motor de radicalización discursiva.
+
+
+Por último, también mencionar que este análisis pretendería incluir una clasificación de los comentarios para comparar resultados con el modelado de tópicos. Sin embargo, debido a las limitaciones existentes de tiempo y recursos y a la complejidad del modelado de tópicos, se optó por continuar sin la clasificación. No obstante, se puede encontrar su código funcional en el repositorio de Github. 
+
+
+# Bibliografía 
+
+- Agencia EFE. (2024, 22 de febrero). Argentina cerrará instituto nacional contra la discriminación. DW. https://www.dw.com/es/argentina-cierra-instituto-nacional-contra-la-discriminacion/a-68347303
+- Agustín Laje. (s.f.). Barbie [Video]. YouTube. https://youtu.be/cD5mz6abc1c
+- Agustín Laje. (s.f.). Debate vs feminista [Video]. YouTube. https://youtu.be/Sx20y15gCoQ
+- Agustín Laje. (s.f.). Ideología de género [Video]. YouTube. https://youtu.be/siLw3QKKFO4
+- Agustín Laje. (s.f.). Laje y feminista sobre el 8M [Video]. YouTube. https://youtu.be/FnxlzCu8Hww
+- Agustín Laje. (s.f.). Laje vs artistas progres [Video]. YouTube. https://youtu.be/w0nXR563P08
+- Agustín Laje. (s.f.). Laje vs Lali Depósito y María Bcra [Video]. YouTube. https://youtu.be/a2s1KzSunBI
+- Agustín Laje. (s.f.). Milei declara la guerra a la ideología de género [Video]. YouTube. https://youtu.be/BBxMdvGOSAc
+- Agustín Laje. (s.f.). Sobre Cristina Kirchner [Video]. YouTube. https://youtu.be/sFIVLDmqyzI
+- Agustín Laje. (s.f.). Cierre del Ministerio de la Mujer [Video]. YouTube. https://youtu.be/gRttVQ0S-7c
+- Agustín Laje. (s.f.). Debate sobre la ideología de género [Video]. YouTube. https://youtu.be/3PV0Rra8NkI
+- Agustín Laje. (s.f.). Guerra contra la ideología de género [Video]. YouTube. https://youtu.be/8isUgQ92Q_k
+- Agustín Laje. (s.f.). Laje Agenda 2030 [Video]. YouTube. https://youtu.be/ToyP8G97vyg
+- Agustín Laje. (s.f.). Preguntando a feministas [Video]. YouTube. https://youtu.be/RXdZ5n2pa3k
+- Banet-Weiser, S. (2018). Empowered: Popular feminism and popular misogyny. Duke University Press. https://doi.org/10.1515/9781478002772
+- Blei, D. M. (2012). Probabilistic topic models. Communications of the ACM, 55(4), 77–84. https://doi.org/10.1145/2133806.2133826
+- Blei, D. M., Ng, A. Y., & Jordan, M. I. (2003). Latent Dirichlet allocation. Journal of Machine Learning Research, 3, 993–1022. https://jmlr.org/papers/v3/blei03a.html
+- Cenital. (s.f.)."Un presidente que insulta" [Video]. YouTube. https://youtu.be/b6OAeWBeUeU
+- Cenital. (s.f.). Historia de la derecha argentina [Video]. YouTube. https://youtu.be/vpLRiv9-GQc
+- Cenital. (s.f.). Julia Mengolini denuncia a Milei [Video]. YouTube. https://youtu.be/69R3Mtoip9Y
+- Cenital. (s.f.). La época de Rosas [Video]. YouTube. https://youtu.be/a8Bn5n_tOWo
+- Cenital. (s.f.). Milei pide inversiones [Video]. YouTube. https://www.youtube.com/live/xpdAsc3iE2c
+- Cenital. (s.f.). El periodista que denunció a Milei [Video]. YouTube. https://youtu.be/n1M_XjLVWUA
+- Cenital. (s.f.). Es difícil hacerlo peor que Macri [Video]. YouTube. https://youtu.be/EFVo3JABb5k
+- Cenital. (s.f.). Peruanización de Argentina [Video]. YouTube. https://youtu.be/RlqIMS7roX4
+- Cenital. (s.f.). Respuesta LGBT a Milei [Video]. YouTube. https://youtu.be/LbGHBorZTSw
+- Cenital. (s.f.). Salud mental [Video]. YouTube. https://youtu.be/53upuyNeYY4
+- Cenital. (s.f.). Violencia contra las mujeres [Video]. YouTube. https://youtu.be/Kte_b3bDJik
+- Clarín. (2023, 2 de agosto). Racismo en Argentina: pocos inmigrantes lo denuncian, muchos lo sufren. Prensa Universidad Nacional de Cuyo. https://www.uncuyo.edu.ar/prensa/clarin-racismo-en-argentina-pocos-inmigrantes-lo-denuncian-muchos-lo-sufren
+- Danann. (s.f.). Danann vs siruela [Video]. YouTube. https://youtu.be/J_bdulsABAE
+- Danann. (s.f.). Danann vs feminazi [Video]. YouTube. https://youtu.be/l8M3y9p3F_A
+- Danann. (s.f.). Danann vs feminista [Video]. YouTube. https://youtu.be/nCDFxM8iyVI
+- Danann. (s.f.). Danann vs libros trans [Video]. YouTube. https://youtu.be/vdPLAZ4HcQI
+- Danann. (s.f.). Danann vs políticas woke [Video]. YouTube. https://youtu.be/jjFhXRnEMrA
+- Danann. (s.f.). Debate épico femizurda [Video]. YouTube. https://youtu.be/qMZj6V0YmkA
+- Danann. (s.f.). Feminismo [Video]. YouTube. https://youtu.be/XkwoXlWli8M
+- Danann. (s.f.). Mes LGBT [Video]. YouTube. https://youtu.be/95NTsaQ-EBc
+- Danann. (s.f.). Mi cuerpo, mi decisión [Video]. YouTube. https://youtu.be/zGEbHtxFg_4
+- Futurock FM. (s.f.). ¿Por qué ganó Milei? [Video]. YouTube. https://youtu.be/Ro5spZuCEX4
+- Futurock FM. (s.f.). ¿Por qué Milei perderá las elecciones? [Video]. YouTube. https://youtu.be/qNTxAbcLZp8
+- Futurock FM. (s.f.). Despolitización y peronismo [Video]. YouTube. https://youtu.be/d817kg-Af84
+- Futurock FM. (s.f.). Historia del género [Video]. YouTube. https://youtu.be/hkQBtJnK2-0
+- Futurock FM. (s.f.). Historia de Futurock [Video]. YouTube. https://youtu.be/nRF-h0IIbZY
+- Futurock FM. (s.f.). Karina y Milei [Video]. YouTube. https://youtu.be/El41R1GepK8
+- Futurock FM. (s.f.). Milei [Video]. YouTube. https://youtu.be/dFyBG2deHyc
+- Futurock FM. (s.f.). Milei va contra las mujeres [Video]. YouTube. https://youtu.be/A43_yGYHlW8
+- Futurock FM. (s.f.). Sobre la derecha [Video]. YouTube. https://youtu.be/CXbOJkELgaI
+- Futurock FM. (s.f.). ¿Por qué Trump apoya a Milei? [Video]. YouTube. https://youtu.be/bzDtCCyy_7s
+- GELATINA. (s.f.). 70 años del golpe a Perón [Video]. YouTube. https://youtu.be/bX7LRWx7wEY
+- GELATINA. (s.f.). Día de la independencia [Video]. YouTube. https://youtu.be/IUFfsoEagFs
+- GELATINA. (s.f.). El cierre autoritario de Milei [Video]. YouTube. https://youtu.be/M6NWDH9fHe0
+- GELATINA. (s.f.). El humor de Pepe Mujica [Video]. YouTube. https://youtu.be/8dmWrU3rqa4
+- GELATINA. (s.f.). Financiamiento del narco [Video]. YouTube. https://youtu.be/RP4fBYIa7jM
+- GELATINA. (s.f.). Cáncer [Video]. YouTube. https://youtu.be/b8ici-zENFQ
+- GELATINA. (s.f.). Día del presupuesto y género [Video]. YouTube. https://youtu.be/NbSTG9dIZFw
+- GELATINA. (s.f.). Donald Trump [Video]. YouTube. https://youtu.be/DBbyI99TtIM
+- GELATINA. (s.f.). Peronismo [Video]. YouTube. https://youtu.be/R1OF4FO7J-A
+- GELATINA. (s.f.). Lali y comunidad LGBT [Video]. YouTube. https://youtu.be/-XnTO30fKYA
+- GELATINA. (s.f.). La cancelación [Video]. YouTube. https://youtu.be/DpQ7WIK9TeM
+- GELATINA. (s.f.). Romi Scalora: Circo Freak [Video]. YouTube. https://youtu.be/gazb7ed3T78
+- GELATINA. (s.f.). Sexualidad en la era de Milei [Video]. YouTube. https://youtu.be/RG6gQayuftY
+- Ging, D. (2019). Alphas, betas, and incels: Theorizing the masculinities of the manosphere. Men and Masculinities, 22(4), 638–657. https://doi.org/10.1177/1097184X17706401
+- Gobierno de Argentina. (2023, 25 de septiembre). El INADI presenta el nuevo Mapa Nacional de la Discriminación. https://www.argentina.gob.ar/noticias/el-inadi-presenta-el-nuevo-mapa-nacional-de-la-discriminacion
+- Kováts, E., & Paternotte, D. (2017). Anti-gender campaigns in Europe: Mobilizing against equality. Rowman & Littlefield. https://library.oapen.org/handle/20.500.12657/31330
+- La Nación. (2024, 25 de junio). Una encuesta de la UBA reveló cuál es, por lejos, el principal motivo de discriminación en la Argentina. https://www.lanacion.com.ar/sociedad/una-encuesta-de-la-uba-revelo-cual-es-por-lejos-el-principal-motivo-de-discriminacion-en-la-nid25062024/
+- Lewis, R. (2020). “This is what the news won’t show you”: YouTube creators and the reactionary politics of micro-celebrity. Television & New Media, 21(2), 201–217. https://doi.org/10.1177/1527476419879919
+- El Peluca Milei. (s.f.). Cambio de género [Video]. YouTube. https://www.youtube.com/live/VEvWuzC590A
+- El Peluca Milei. (s.f.). Educación sexual [Video]. YouTube. https://youtu.be/csvrxOyvy2A
+- El Peluca Milei. (s.f.). Feminismo [Video]. YouTube. https://youtu.be/dKwwezsyIXQ
+- El Peluca Milei. (s.f.). Marcha LGBT [Video]. YouTube. https://youtu.be/b0kCOhSkSmo
+- El Peluca Milei. (s.f.). Milei contra Cristina [Video]. YouTube. https://youtu.be/nND_cfPGaeY
+- El Peluca Milei. (s.f.). Prohibición del lenguaje inclusivo [Video]. YouTube. https://www.youtube.com/live/IzC7618TowQ
+- El Peluca Milei. (s.f.). El Peluca Milei vs Bregman [Video]. YouTube. https://www.youtube.com/live/u9Coxy-ndZs
+- El Peluca Milei. (s.f.). El Peluca Milei vs feministas (Adorni) [Video]. YouTube. https://www.youtube.com/live/bTGDMqxLt-k
+- El Peluca Milei. (s.f.). El Peluca Milei vs zurda [Video]. YouTube. https://youtu.be/sb_xiUnsSNA
+- El Peluca Milei. (s.f.). Feminismo y género [Video]. YouTube. https://www.youtube.com/live/Yhe6sU31K-w
+- Munger, K., & Phillips, J. (2022). Right-wing YouTube: A supply and demand perspective. The International Journal of Press/Politics, 27(2), 271–295. https://doi.org/10.1177/1940161220964767
+- Papacharissi, Z. (2015). Affective publics: Sentiment, technology, and politics. Oxford University Press. https://doi.org/10.1093/acprof:oso/9780199999736.001.0001
+- Redbioética. (2019, 10 de octubre). Discriminación en Argentina. https://redbioetica.com.ar/discriminacion-en-argentina-2/
+- Roberts, M. E., Stewart, B. M., & Tingley, B. (2019). stm: An R package for structural topic models. Journal of Statistical Software, 91(2), 1–40. https://doi.org/10.18637/jss.v091.i02
